@@ -1,0 +1,55 @@
+#include "user.h"
+
+
+User::User(const QString& _id, const QString& _name, const QString& _email, const QString& _password, Role _role) : id(_id), name(_name), email(_email), password(PasswordHasher::hashPassword(_password)), role(_role) {}
+
+
+Role User::getRole() const {
+    return this->role;
+}
+
+QString User::getRoleString() const {
+    switch(this->getRole()){
+        case Role::Administrator:
+            return "Адміністратор";
+        case Role::Customer:
+        default:
+            return "Користувач";
+    }
+}
+
+bool User::isAdmin() const {
+    return this->getRole() == Role::Administrator;
+}
+
+QString User::getId() const {
+    return this->id;
+}
+
+QString User::getName() const {
+    return this->name;
+}
+
+QString User::getEmail() const {
+    return this->email;
+}
+
+QString User::getPassword() const {
+    return this->password ;
+}
+
+void User::setName(const QString& _name) {
+    if (!_name.trimmed().isEmpty()) {
+        this->name = _name;
+        return;
+    }
+    throw InvalidNameException();
+}
+
+void User::setPassword(const QString& _password) {
+    if (_password.length() > 8) {
+        throw PasswordTooShortException();
+    }
+
+    this->password = PasswordHasher::hashPassword(_password);
+}
