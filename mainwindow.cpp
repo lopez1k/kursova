@@ -8,7 +8,9 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , manager(new UserManager())
+    , usermanager(new UserManager())
+    , carmanager(new CarManager())
+    , rentalmanager(new RentalManager(*usermanager, *carmanager))
 {
     ui->setupUi(this);
 }
@@ -16,7 +18,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    delete manager;
+    delete rentalmanager;
+    delete usermanager;
+    delete carmanager;
     delete ui;
 }
 
@@ -26,15 +30,15 @@ void MainWindow::on_pushButton_clicked()
     QString _password = ui->passwordInput->text();
 
     try {
-        if (manager->login(_email, _password)) {
-            if (manager->getCurrentUser()->isAdmin()) {
-                AdminWindow* adminui = new AdminWindow(this->manager, this);
+        if (usermanager->login(_email, _password)) {
+            if (usermanager->getCurrentUser()->isAdmin()) {
+                AdminWindow* adminui = new AdminWindow(this->usermanager, this->carmanager, this->rentalmanager, this);
                 adminui->setAttribute(Qt::WA_DeleteOnClose);
                 adminui->show();
                 this->hide();
             }
             else {
-                UserWindow* userui = new UserWindow(this->manager, this);
+                UserWindow*  userui  = new UserWindow(this->usermanager, this->carmanager, this->rentalmanager, this);
                 userui->setAttribute(Qt::WA_DeleteOnClose);
                 userui->show();
                 this->hide();

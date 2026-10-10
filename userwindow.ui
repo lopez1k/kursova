@@ -67,21 +67,21 @@
       <item>
        <widget class="QPushButton" name="btnCatalog">
         <property name="text">
-         <string>🚗 Каталог авто</string>
+         <string>Каталог авто</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="btnMyRentals">
         <property name="text">
-         <string>📋 Мої бронювання</string>
+         <string>Мої бронювання</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="btnProfile">
         <property name="text">
-         <string>👤 Профіль</string>
+         <string>Профіль</string>
         </property>
        </widget>
       </item>
@@ -101,7 +101,7 @@
       <item>
        <widget class="QPushButton" name="btnLogout">
         <property name="text">
-         <string>🚪 Вийти</string>
+         <string>Вийти</string>
         </property>
        </widget>
       </item>
@@ -125,58 +125,39 @@
       <widget class="QStackedWidget" name="stackedWidget">
        <widget class="QWidget" name="catalogPage">
         <layout class="QVBoxLayout" name="catalogLayout">
+         <property name="leftMargin">
+          <number>10</number>
+         </property>
+         <property name="topMargin">
+          <number>10</number>
+         </property>
+         <property name="rightMargin">
+          <number>10</number>
+         </property>
+         <property name="bottomMargin">
+          <number>10</number>
+         </property>
          <item>
-          <widget class="QTableWidget" name="carsTable">
-           <column>
-            <property name="text">
-             <string>ID</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Марка</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Модель</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Ціна/День ($)</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Статус</string>
-            </property>
-           </column>
+          <widget class="QListWidget" name="carsListWidget">
+           <property name="movement">
+            <enum>QListView::Movement::Static</enum>
+           </property>
+           <property name="flow">
+            <enum>QListView::Flow::LeftToRight</enum>
+           </property>
+           <property name="isWrapping" stdset="0">
+            <bool>true</bool>
+           </property>
+           <property name="resizeMode">
+            <enum>QListView::ResizeMode::Adjust</enum>
+           </property>
+           <property name="viewMode">
+            <enum>QListView::ViewMode::IconMode</enum>
+           </property>
+           <property name="spacing">
+            <number>12</number>
+           </property>
           </widget>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="catalogActionLayout">
-           <item>
-            <spacer name="actionSpacer">
-             <property name="orientation">
-              <enum>Qt::Orientation::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="QPushButton" name="btnRentCar">
-             <property name="text">
-              <string>🔑 Забронювати авто</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
          </item>
         </layout>
        </widget>

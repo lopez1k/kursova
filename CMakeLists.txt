@@ -30,6 +30,11 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         passwordhasher.h passwordhasher.cpp
         adminwindow.h adminwindow.cpp adminwindow.ui
         userwindow.h userwindow.cpp userwindow.ui
+        car.h car.cpp
+        carmanager.h carmanager.cpp
+        rentdialog.h rentdialog.cpp
+        rental.h rental.cpp
+        rentalmanager.h rentalmanager.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET OOP_PZ24_Andrii_Pushchak APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

@@ -3,6 +3,17 @@
 
 User::User(const QString& _id, const QString& _name, const QString& _email, const QString& _password, Role _role) : id(_id), name(_name), email(_email), password(PasswordHasher::hashPassword(_password)), role(_role) {}
 
+Role User::roleToCategory(const QString& str) {
+    if (str == "Адміністратор") {
+        return Role::Administrator;
+    }
+    if (str == "Користувач") {
+        return Role::Customer;
+    }
+    return Role::Customer;
+}
+
+
 
 Role User::getRole() const {
     return this->role;
@@ -52,4 +63,24 @@ void User::setPassword(const QString& _password) {
     }
 
     this->password = PasswordHasher::hashPassword(_password);
+}
+
+
+QJsonObject& operator << (QJsonObject& json, const User& user) {
+    json["id"] = user.id;
+    json["name"] = user.name;
+    json["email"] = user.email;
+    json["password"] = user.password;
+    json["role"] = user.getRoleString();
+    return json;
+}
+
+const QJsonObject& operator >> (const QJsonObject& json, User& user) {
+    user.id = json["id"].toString();
+    user.name = json["name"].toString();
+    user.email = json["email"].toString();
+    user.password = json["password"].toString();
+    user.role = User::roleToCategory(json["role"].toString());
+
+    return json;
 }

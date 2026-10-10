@@ -1,10 +1,61 @@
 #include "usermanager.h"
 
-UserManager::UserManager() : currentUser(nullptr) {
-    // Для тестування можна додати дефолтного адміна
-    this->users.append(User("1", "Admin", "admin@gmail.com", "admin1", Role::Administrator));
-    this->users.append(User("2", "User", "user@gmail.com", "user1", Role::Customer));
+UserManager::UserManager(QString _filename) : currentUser(nullptr), filename(_filename) {
+    loadFromJson();
 }
+
+
+UserManager::~UserManager() {
+    saveToJson();
+}
+
+void UserManager::saveToJson() const {
+    QJsonArray jsonArray;
+
+    for(const User& user: this->users) {
+        QJsonObject userObject;
+        userObject << user;
+        jsonArray.append(userObject);
+    }
+
+    QJsonDocument jsonDocument(jsonArray);
+
+    QFile file(this->filename);
+    if (!file.open(QIODevice::WriteOnly)) {
+        return;
+    }
+
+    file.write(jsonDocument.toJson(QJsonDocument::Indented));
+    file.close();
+}
+
+void UserManager::loadFromJson() {
+    QFile file(this->filename);
+    if (!file.open(QIODevice::ReadOnly)) {
+        return;
+    }
+
+    QByteArray data = file.readAll();
+    file.close();
+
+    QJsonDocument jsonDocument = QJsonDocument::fromJson(data);
+    if (!jsonDocument.isArray()) {
+        return;
+    }
+
+    this->users.clear();
+
+    QJsonArray jsonArray = jsonDocument.array();
+
+    for(const QJsonValue& value: jsonArray) {
+        if (value.isObject()) {
+            User user;
+            value.toObject() >> user;
+            users.append(user);
+        }
+    }
+}
+
 
 void UserManager::addUser(const User& _user) {
     users.append(_user);
@@ -29,14 +80,25 @@ void UserManager::logout() {
 User* UserManager::findUserByEmail(const QString& email) {
     QString cleanEmail = email.trimmed().toLower();
 
-    for (int i = 0; i < users.size(); ++i) {
-        if (users[i].getEmail().trimmed().toLower() == cleanEmail) {
-            return &users[i];
+    for (User& u : users) {
+        if (u.getEmail().trimmed().toLower() == cleanEmail) {
+            return &u;
         }
     }
 
     throw UserNotFoundException(email);
 }
+
+User* UserManager::findUserById(const QString& id) {
+    for (User& u : users) {
+        if (u.getId() == id) {
+            return &u;
+        }
+    }
+
+    throw UserNotFoundException(id);
+}
+
 
 User* UserManager::getCurrentUser() const {
     return this->currentUser;

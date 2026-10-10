@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include "usermanager.h"
+#include "carmanager.h"
+#include "rentalmanager.h"
 
 namespace Ui {
 class AdminWindow;
@@ -13,7 +15,7 @@ class AdminWindow : public QWidget
     Q_OBJECT
 
 public:
-    explicit AdminWindow(UserManager* manager, QWidget* loginWindow = nullptr, QWidget *parent = nullptr);
+    explicit AdminWindow(UserManager* usermanager, CarManager* carmanager, RentalManager* rentalmanager, QWidget* loginWindow = nullptr, QWidget *parent = nullptr);
     ~AdminWindow();
 
 
@@ -26,7 +28,9 @@ private slots:
 
 private:
     Ui::AdminWindow *ui;
-    UserManager* manager;
+    UserManager* usermanager;
+    CarManager* carmanager;
+    RentalManager* rentalmanager;
     void loadUsersTable() const;
     QWidget* loginWindow;
 };

@@ -1,18 +1,25 @@
 #include "ui_userwindow.h"
 #include "userwindow.h"
+#include "QMessageBox"
+#include "rentdialog.h"
 
-UserWindow::UserWindow(UserManager* manager, QWidget* loginWindow, QWidget *parent)
+UserWindow::UserWindow(UserManager* usermanager, CarManager* carmanager, RentalManager* rentalmanager, QWidget* loginWindow, QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::UserWindow)
-    , manager(manager)
+    , usermanager(usermanager)
+    , carmanager(carmanager)
+    , rentalmanager(rentalmanager)
     , loginWindow(loginWindow)
 {
     ui->setupUi(this);
-    if (manager && manager->getCurrentUser()) {
-        User* currentUser = manager->getCurrentUser();
+    if (usermanager && usermanager->getCurrentUser()) {
+        User* currentUser = usermanager->getCurrentUser();
         ui->lblProfileEmail->setText("Email: <b>" + currentUser->getEmail() + "</b>");
         ui->lblProfileName->setText("Ім'я: <b>" + currentUser->getName() + "</b>");
+        rentalmanager->loadRentalsTable(ui->myRentalsTable, currentUser->getId());
     }
+    carmanager->loadCarsList(ui->carsListWidget);
+
 }
 
 UserWindow::~UserWindow()
@@ -34,8 +41,8 @@ void UserWindow::on_btnProfile_clicked() {
 }
 
 void UserWindow::on_btnLogout_clicked() {
-    if (manager) {
-        manager->logout();
+    if (usermanager) {
+        usermanager->logout();
     }
 
     if (loginWindow)
@@ -44,4 +51,46 @@ void UserWindow::on_btnLogout_clicked() {
     }
 
     this->close();
+}
+
+void UserWindow::on_carsListWidget_itemDoubleClicked(QListWidgetItem *item) {
+    if (!item) return;
+    User* user = usermanager->getCurrentUser();
+    if (!user) {
+        return;
+    }
+    qDebug() << item->data(Qt::UserRole).toString();
+    QString carId = item->data(Qt::UserRole).toString();
+
+    Car* selectedCar = carmanager->getCarById(carId);
+
+    if (!selectedCar) {
+        QMessageBox::warning(this, "Помилка", "Автомобіль з таким ID не знайдено в базі!");
+        return;
+    }
+
+    RentDialog dialog(*selectedCar, this);
+
+    if (dialog.exec() == QDialog::Accepted) {
+        QDate startDate = dialog.getStartDate();
+        QDate endDate = dialog.getEndDate();
+        double totalPrice = dialog.getTotalPrice();
+
+        QDateTime end(dialog.getEndDate(), QTime(23, 59));
+
+        rentalmanager->rentCar(user->getId(), selectedCar->getId(), end);
+        bool success = true; // або ваша логіка збереження оренди в БД/файл
+
+        if (success) {
+            QMessageBox::information(this, "Успіх",
+                                     QString("Автомобіль успішно заброньовано на %1 днів!\nСума: %2 грн")
+                                         .arg(startDate.daysTo(endDate))
+                                         .arg(totalPrice, 0, 'f', 2));
+
+            carmanager->loadCarsList(ui->carsListWidget, true);
+            rentalmanager->loadRentalsTable(ui->myRentalsTable, user->getId());
+        } else {
+            QMessageBox::warning(this, "Помилка", "Не вдалося оформити бронювання.");
+        }
+    }
 }

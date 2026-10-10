@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include "usermanager.h"
+#include "carmanager.h"
+#include "rentalmanager.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -23,6 +25,8 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    UserManager* manager;
+    UserManager* usermanager;
+    CarManager* carmanager;
+    RentalManager* rentalmanager;
 };
 #endif // MAINWINDOW_H

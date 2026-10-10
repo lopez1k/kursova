@@ -5,6 +5,7 @@
 #include <iostream>
 #include "userexception.h"
 #include "passwordhasher.h"
+#include <QJsonObject>
 
 enum class Role {
     Customer,
@@ -18,6 +19,8 @@ private:
     QString email;
     QString password;
     Role role;
+
+    static Role roleToCategory(const QString& str);
 
 public:
     User() = default;
@@ -33,8 +36,8 @@ public:
     void setEmail(const QString& _email);
     void setPassword(const QString& _password);
 
-    friend QTextStream& operator<<(QTextStream& out, const User& user);
-    friend QTextStream& operator>>(QTextStream& in, User& user);
+    friend QJsonObject& operator << (QJsonObject& json, const User& user);
+    friend const QJsonObject& operator >> (const QJsonObject& json, User& user);
 
 };
 
