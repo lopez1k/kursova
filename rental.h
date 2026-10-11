@@ -24,7 +24,6 @@ private:
     double totalPrice = 0.0;
     RentalStatus status = RentalStatus::Active;
     static constexpr double OVERDUE_MULTIPLIER = 1.5;
-    static RentalStatus stringToStatus(const QString& str);
 
 
 public:
@@ -44,6 +43,7 @@ public:
 
     void complete();
     void cancel();
+    static RentalStatus stringToStatus(const QString& str);
 
     friend QJsonObject& operator << (QJsonObject& json, const Rental& rental);
     friend const QJsonObject& operator >> (const QJsonObject& json, Rental& rental);

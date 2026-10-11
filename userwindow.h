@@ -26,12 +26,28 @@ private slots:
 
     void on_carsListWidget_itemDoubleClicked(QListWidgetItem *item);
 
+    void on_comboCategory_currentIndexChanged(int index);
+
+    void on_spinMinSeats_valueChanged(int arg1);
+
+    void on_spinMaxPrice_valueChanged(double arg1);
+
+    void on_btnSortMerge_clicked();
+
+    void on_btnMinMaxMileage_clicked();
+
+    void on_btnGroupAndSort_clicked();
+
 private:
     Ui::UserWindow* ui;
     UserManager* usermanager;
     CarManager* carmanager;
     RentalManager* rentalmanager;
     QWidget* loginWindow;
+    bool isAscending = true;
+    void applyFilters();
+    QWidget* createCarCardWidget(const Car& car) const;
+    void loadCarsList(QListWidget* ui, const QList<Car>& result, bool isAvailable = true) const;
 };
 
 #endif // USERWINDOW_H

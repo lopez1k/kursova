@@ -1,7 +1,7 @@
 #include "car.h"
 
 
-Car::Car(const QString _id, const QString _brand, const QString _model, const Category _category, const int _manufacturerYear, const int _seats, const double _rentPrice, const double _mileage, const Status _status) : id(_id), brand(_brand), model(_model), category(_category), manufacturerYear(_manufacturerYear), seats(_seats), rentPrice(_rentPrice), mileage(_mileage), status(_status) {}
+Car::Car(const QString& _id, const QString& _brand, const QString& _model, const Category& _category, const int& _manufacturerYear, const int& _seats, const double& _rentPrice, const double& _mileage, const Status& _status) : id(_id), brand(_brand), model(_model), category(_category), manufacturerYear(_manufacturerYear), seats(_seats), rentPrice(_rentPrice), mileage(_mileage), status(_status) {}
 
 
 Category Car::stringToCategory(const QString& str) {
@@ -19,7 +19,7 @@ Status Car::stringToStatus(const QString& str) {
     if (str == "Зайнято") {
         return Status::Taken;
     }
-    if (str == "Не доступно") {
+    if (str == "Недоступно") {
         return Status::NotAvailable;
     }
     if (str == "Архівовано")
@@ -84,7 +84,7 @@ QString Car::getStatusString() const {
     switch(this->getStatus()) {
         case Status::Available: return "Доступно";
         case Status::Taken: return "Зайнято";
-        case Status::Archived: return "Архівовно";
+        case Status::Archived: return "Архівовано";
         case Status::NotAvailable:
         default: return "Недоступно";
     }

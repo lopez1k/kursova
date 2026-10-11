@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>850</width>
-    <height>600</height>
+    <width>928</width>
+    <height>650</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -138,6 +138,112 @@
           <number>10</number>
          </property>
          <item>
+          <widget class="QGroupBox" name="filterGroupBox">
+           <property name="title">
+            <string>Фільтри та сортування</string>
+           </property>
+           <layout class="QVBoxLayout" name="filterMainLayout">
+            <item>
+             <layout class="QHBoxLayout" name="filterInputsLayout">
+              <item>
+               <widget class="QLabel" name="lblCategory">
+                <property name="text">
+                 <string>Клас:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="comboCategory">
+                <item>
+                 <property name="text">
+                  <string>Усі класи</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Економ</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Комфорт</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Бізнес</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="lblMinSeats">
+                <property name="text">
+                 <string>Мін. місць:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="spinMinSeats">
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>20</number>
+                </property>
+                <property name="value">
+                 <number>1</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="lblMaxPrice">
+                <property name="text">
+                 <string>Макс. ціна:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="spinMaxPrice">
+                <property name="maximum">
+                 <double>10000000.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>10000000.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="filterButtonsLayout">
+              <item>
+               <widget class="QPushButton" name="btnSortMerge">
+                <property name="text">
+                 <string>Сортувати ціною (за зростанням)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnMinMaxMileage">
+                <property name="text">
+                 <string>Мін/Макс пробіг</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnGroupAndSort">
+                <property name="text">
+                 <string>Згрупувати (Клас + Рік)</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
           <widget class="QListWidget" name="carsListWidget">
            <property name="movement">
             <enum>QListView::Movement::Static</enum>
@@ -151,11 +257,17 @@
            <property name="resizeMode">
             <enum>QListView::ResizeMode::Adjust</enum>
            </property>
+           <property name="spacing">
+            <number>10</number>
+           </property>
+           <property name="gridSize">
+            <size>
+             <width>220</width>
+             <height>160</height>
+            </size>
+           </property>
            <property name="viewMode">
             <enum>QListView::ViewMode::IconMode</enum>
-           </property>
-           <property name="spacing">
-            <number>12</number>
            </property>
           </widget>
          </item>

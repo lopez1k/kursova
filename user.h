@@ -20,7 +20,6 @@ private:
     QString password;
     Role role;
 
-    static Role roleToCategory(const QString& str);
 
 public:
     User() = default;
@@ -35,6 +34,7 @@ public:
     void setName(const QString& _name);
     void setEmail(const QString& _email);
     void setPassword(const QString& _password);
+    static Role roleToCategory(const QString& str);
 
     friend QJsonObject& operator << (QJsonObject& json, const User& user);
     friend const QJsonObject& operator >> (const QJsonObject& json, User& user);

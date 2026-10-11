@@ -125,55 +125,98 @@
        <widget class="QWidget" name="carsPage">
         <layout class="QVBoxLayout" name="carsLayout">
          <item>
-          <widget class="QTableWidget" name="carsTable">
-           <property name="editTriggers">
-            <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+          <layout class="QHBoxLayout" name="filterLayout">
+           <item>
+            <widget class="QLabel" name="lblCategoryFilter">
+             <property name="text">
+              <string>Категорія:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="categoryFilter">
+             <item>
+              <property name="text">
+               <string>Усі</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Економ</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Комфорт</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Бізнес</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="lblStatusFilter">
+             <property name="text">
+              <string>Статус:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="statusFilter">
+             <item>
+              <property name="text">
+               <string>Усі</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Доступно</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Зайнято</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Недоступно</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item>
+            <spacer name="filterSpacer">
+             <property name="orientation">
+              <enum>Qt::Orientation::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QListWidget" name="carsListWidget">
+           <property name="movement">
+            <enum>QListView::Movement::Static</enum>
            </property>
-           <column>
-            <property name="text">
-             <string>ID</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Марка</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Модель</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Рік випуску</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Пробіг</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Клас</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Місць</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Ціна/День</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Статус</string>
-            </property>
-           </column>
+           <property name="resizeMode">
+            <enum>QListView::ResizeMode::Adjust</enum>
+           </property>
+           <property name="spacing">
+            <number>10</number>
+           </property>
+           <property name="viewMode">
+            <enum>QListView::ViewMode::IconMode</enum>
+           </property>
           </widget>
          </item>
          <item>
@@ -187,6 +230,9 @@
            </item>
            <item>
             <widget class="QPushButton" name="btnEditCar">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="text">
               <string>Редагувати</string>
              </property>
@@ -194,6 +240,9 @@
            </item>
            <item>
             <widget class="QPushButton" name="btnDeleteCar">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="text">
               <string>Видалити</string>
              </property>

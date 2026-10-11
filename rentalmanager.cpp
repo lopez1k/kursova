@@ -51,19 +51,27 @@ void RentalManager::loadFromJson() {
     this->rentals.clear();
 
     QJsonArray jsonArray = jsonDocument.array();
+    int maxNum = 0;
 
     for(const QJsonValue& value: jsonArray) {
         if (value.isObject()) {
             Rental rental;
             value.toObject() >> rental;
             rentals.append(rental);
+            QString numStr = rental.getId();
+            numStr.remove(QRegularExpression("[^0-9]"));
+
+            int currentNum = numStr.toInt();
+            if (currentNum > maxNum) {
+                maxNum = currentNum;
+            }
         }
     }
+    this->nextId = maxNum + 1;
 }
 
 
 void RentalManager::rentCar(const QString& _userId, const QString& _carId, const QDateTime& _endDate) {
-    // ASSUMPTION: findById повертає nullptr, якщо не знайдено
     if (usermanager.findUserById(_userId) == nullptr)
         return ;
 

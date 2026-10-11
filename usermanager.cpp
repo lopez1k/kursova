@@ -9,6 +9,13 @@ UserManager::~UserManager() {
     saveToJson();
 }
 
+QString UserManager::generateId() {
+    return QString("U-%1").arg(nextId++);
+}
+
+
+
+
 void UserManager::saveToJson() const {
     QJsonArray jsonArray;
 
@@ -47,13 +54,24 @@ void UserManager::loadFromJson() {
 
     QJsonArray jsonArray = jsonDocument.array();
 
+    int maxNum = 0;
+
     for(const QJsonValue& value: jsonArray) {
         if (value.isObject()) {
             User user;
             value.toObject() >> user;
             users.append(user);
+
+            QString numStr = user.getId();
+            numStr.remove(QRegularExpression("[^0-9]"));
+
+            int currentNum = numStr.toInt();
+            if (currentNum > maxNum) {
+                maxNum = currentNum;
+            }
         }
     }
+    this->nextId = maxNum + 1;
 }
 
 

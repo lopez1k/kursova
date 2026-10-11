@@ -12,6 +12,8 @@ private:
     QList<User> users;
     User* currentUser;
     QString filename;
+    int nextId = 1;
+    QString generateId();
 public:
     UserManager(QString _filename = "users.json");
     ~UserManager();

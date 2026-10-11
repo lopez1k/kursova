@@ -35,6 +35,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         rentdialog.h rentdialog.cpp
         rental.h rental.cpp
         rentalmanager.h rentalmanager.cpp
+        addcarwindow.h addcarwindow.cpp addcarwindow.ui
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET OOP_PZ24_Andrii_Pushchak APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
