@@ -25,124 +25,97 @@ AdminWindow::~AdminWindow()
 {
     delete ui;
 }
-
 QWidget* AdminWindow::createCarCardWidget(const Car& car) const {
-    QWidget* card = new QWidget();
-    card->setObjectName("carCard");
-    card->setFixedSize(200, 180);
+    QLocale ua(QLocale::Ukrainian);
 
-    card->setStyleSheet(
-        "#carCard {"
-        "    background-color: #383838;"
-        "    border: 1px solid #555555;"
-        "    border-radius: 8px;"
-        "}"
-        "#carCard:hover {"
-        "    background-color: #424242;"
-        "    border: 1px solid #4CAF50;"
-        "}"
-        );
+    QFrame* card = new QFrame();
+    card->setObjectName("carCard");
+    card->setAttribute(Qt::WA_Hover);
+    card->setProperty("selected", false);
 
     QVBoxLayout* layout = new QVBoxLayout(card);
-    layout->setContentsMargins(12, 10, 12, 10);
-    layout->setSpacing(5);
+    layout->setContentsMargins(14, 12, 14, 12);
+    layout->setSpacing(4);
 
+    QLabel* title = new QLabel(QString("%1 %2").arg(car.getBrand(), car.getModel()));
+    title->setObjectName("carTitle");
 
-    QLabel* title = new QLabel(QString("%1 %2 <font color='#8a8a8a'>(%3)</font>")
-                                   .arg(car.getBrand(), car.getModel()).arg(car.getManufacturerYear()));
-    title->setStyleSheet("font-size: 13px; font-weight: bold; color: #ffffff; border: none; background: transparent;");
-
-
-    QFrame* line1 = new QFrame();
-    line1->setFrameShape(QFrame::HLine);
-    line1->setStyleSheet("color: #4a4a4a; background-color: #4a4a4a; max-height: 1px; border: none;");
-
-    QString statusColor = "#cccccc";
-    if (car.getStatusString() == "Доступно") statusColor = "#4CAF50";
-    else if (car.getStatusString() == "Зайнято") statusColor = "#FF9800";
-    else statusColor = "#E57373";
-
-    QLabel* info = new QLabel(QString(
-                                  "Клас: <b>%1</b><br>"
-                                  "Місць: <b>%2</b><br>"
-                                  "Пробіг: <b>%3 км</b><br>"
-                                  "Статус: <font color='%4'><b>%5</b></font>")
+    QLabel* meta = new QLabel(QString("%1 · %2 · %3 місць")
                                   .arg(car.getCategoryString())
-                                  .arg(car.getSeats())
-                                  .arg(car.getMileage())
-                                  .arg(statusColor)
-                                  .arg(car.getStatusString()));
-    info->setStyleSheet("font-size: 11px; color: #cccccc; border: none; background: transparent; line-height: 125%;");
+                                  .arg(car.getManufacturerYear())
+                                  .arg(car.getSeats()));
+    meta->setObjectName("carMeta");
 
+    QLabel* mileage = new QLabel(QString("Пробіг: %1 км")
+                                     .arg(ua.toString(qlonglong(car.getMileage()))));
+    mileage->setObjectName("carMeta");
 
-    QFrame* line2 = new QFrame();
-    line2->setFrameShape(QFrame::HLine);
-    line2->setStyleSheet("color: #4a4a4a; background-color: #4a4a4a; max-height: 1px; border: none;");
+    QFrame* line = new QFrame();
+    line->setObjectName("carLine");
+    line->setFixedHeight(1);
 
+    const double p = car.getRentPrice();
+    const int decimals = (std::floor(p) == p) ? 0 : 2;
+    QLabel* price = new QLabel(QString("%1 ₴ / доба").arg(ua.toString(p, 'f', decimals)));
+    price->setObjectName("carPrice");
 
-    QLabel* price = new QLabel(QString("<font color='#4caf50'><b>%1 грн</b></font> <font color='#8a8a8a' size='2'>/ день</font>")
-                                   .arg(QString::number(car.getRentPrice(), 'f', 2)));
-    price->setStyleSheet("font-size: 13px; border: none; background: transparent;");
+    QLabel* status = new QLabel(car.getStatusString());
+    switch (car.getStatus()) {
+    case Status::Available: status->setObjectName("carStatusFree"); break;  // зелений
+    case Status::Taken:     status->setObjectName("carStatusBusy"); break;  // помаранчевий
+    default:                status->setObjectName("carStatusOff");  break;  // червоний
+    }
+
+    QHBoxLayout* bottom = new QHBoxLayout();
+    bottom->setContentsMargins(0, 4, 0, 0);
+    bottom->addWidget(price);
+    bottom->addStretch();
+    bottom->addWidget(status);
 
     layout->addWidget(title);
-    layout->addWidget(line1);
-    layout->addWidget(info);
-    layout->addWidget(line2);
-    layout->addWidget(price);
+    layout->addWidget(meta);
+    layout->addWidget(mileage);
+    layout->addStretch();
+    layout->addWidget(line);
+    layout->addLayout(bottom);
 
     return card;
 }
 
 
+void AdminWindow::loadCarsList(QListWidget* list, const QList<Car>& result, bool isAvailable) const {
+    list->clear();
+    list->setViewMode(QListView::IconMode);
+    list->setResizeMode(QListView::Adjust);
+    list->setMovement(QListView::Static);
+    list->setSpacing(4);
 
-void AdminWindow::loadCarsList(QListWidget* ui, const QList<Car>& result, bool isAvailable) const {
-    ui->clear();
-    ui->setViewMode(QListView::IconMode);
-    ui->setResizeMode(QListView::Adjust);
-    ui->setMovement(QListView::Static);
-
-
-    ui->setSpacing(6);
-
-
-    const QSize cardSize(200, 160);
-
-    const QSize itemSize(216, 176);
+    const QSize cardSize(220, 132);
+    const QSize itemSize(cardSize.width() + 12, cardSize.height() + 12);
 
     for (const Car& car : result) {
-        if (car.getStatus() == Status::Archived) {
+        if (car.getStatus() == Status::Archived)
             continue;
-        }
-        if (isAvailable) {
-            if (car.getStatus() == Status::NotAvailable || car.getStatus() == Status::Taken) {
-                continue;
-            }
-        }
+        if (isAvailable &&
+            (car.getStatus() == Status::NotAvailable || car.getStatus() == Status::Taken))
+            continue;
 
-        QListWidgetItem* item = new QListWidgetItem(ui);
+        QListWidgetItem* item = new QListWidgetItem(list);
         item->setSizeHint(itemSize);
         item->setData(Qt::UserRole, car.getId());
 
-
         QWidget* container = new QWidget();
-
-
         QVBoxLayout* containerLayout = new QVBoxLayout(container);
-
-
-        containerLayout->setContentsMargins(8, 8, 8, 8);
+        containerLayout->setContentsMargins(6, 6, 6, 6);
         containerLayout->setAlignment(Qt::AlignCenter);
 
         QWidget* cardWidget = createCarCardWidget(car);
         cardWidget->setFixedSize(cardSize);
-
         containerLayout->addWidget(cardWidget);
 
-        ui->addItem(item);
-        ui->setItemWidget(item, container);
+        list->setItemWidget(item, container);
     }
 }
-
 
 
 void AdminWindow::on_btnCars_clicked()

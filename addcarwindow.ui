@@ -6,47 +6,118 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>520</height>
+    <width>420</width>
+    <height>560</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>400</width>
-    <height>520</height>
+    <width>420</width>
+    <height>560</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>400</width>
-    <height>520</height>
+    <width>420</width>
+    <height>560</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>Додати новий автомобіль</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">
+QWidget { font-family: &quot;Segoe UI&quot;; font-size: 10pt; color: #1F2933; }
+QWidget#AddCarWindow { background: #FFFFFF; }
+QLabel#lblHeader { font-size: 14pt; font-weight: 600; padding-bottom: 8px; }
+QFormLayout QLabel, QLabel { color: #5B6573; }
+QLabel#lblHeader { color: #1F2933; }
+
+QLineEdit, QComboBox, QSpinBox, QDoubleSpinBox {
+    background: #FFFFFF; border: 1px solid #C9D0D9; border-radius: 4px;
+    padding: 5px 8px; min-height: 22px; selection-background-color: #4A6FA5;
+}
+QComboBox, QSpinBox, QDoubleSpinBox { padding-right: 26px; }
+QLineEdit:hover, QComboBox:hover, QSpinBox:hover, QDoubleSpinBox:hover { border-color: #A9B8CC; }
+QLineEdit:focus, QComboBox:focus, QSpinBox:focus, QDoubleSpinBox:focus { border-color: #4A6FA5; }
+
+QComboBox::drop-down {
+    subcontrol-origin: padding; subcontrol-position: center right;
+    width: 24px; border: none; background: transparent;
+}
+QComboBox::down-arrow {
+    image: none; width: 0px; height: 0px;
+    border-left: 4px solid transparent; border-right: 4px solid transparent;
+    border-top: 5px solid #5B6573;
+}
+QComboBox::down-arrow:on { border-top: none; border-bottom: 5px solid #5B6573; }
+QComboBox QAbstractItemView {
+    background: #FFFFFF; border: 1px solid #C9D0D9; outline: 0; padding: 4px;
+    selection-background-color: #EEF3FA; selection-color: #1F2933;
+}
+
+QSpinBox::up-button, QDoubleSpinBox::up-button,
+QSpinBox::down-button, QDoubleSpinBox::down-button {
+    subcontrol-origin: border; width: 22px;
+    border: none; border-left: 1px solid #E1E5EA; background: transparent;
+}
+QSpinBox::up-button, QDoubleSpinBox::up-button { subcontrol-position: top right; border-top-right-radius: 4px; }
+QSpinBox::down-button, QDoubleSpinBox::down-button { subcontrol-position: bottom right; border-bottom-right-radius: 4px; }
+QSpinBox::up-button:hover, QDoubleSpinBox::up-button:hover,
+QSpinBox::down-button:hover, QDoubleSpinBox::down-button:hover { background: #EEF1F5; }
+QSpinBox::up-arrow, QDoubleSpinBox::up-arrow {
+    image: none; width: 0px; height: 0px;
+    border-left: 4px solid transparent; border-right: 4px solid transparent;
+    border-bottom: 4px solid #5B6573;
+}
+QSpinBox::down-arrow, QDoubleSpinBox::down-arrow {
+    image: none; width: 0px; height: 0px;
+    border-left: 4px solid transparent; border-right: 4px solid transparent;
+    border-top: 4px solid #5B6573;
+}
+
+QPushButton {
+    background: #F4F6F8; border: 1px solid #DDE2E8; border-radius: 4px;
+    padding: 8px 18px; min-height: 20px;
+}
+QPushButton:hover   { background: #EAEEF3; border-color: #C9D0D9; }
+QPushButton:pressed { background: #DFE5EC; }
+QPushButton#btnAdd { background: #4A6FA5; border-color: #4A6FA5; color: #FFFFFF; font-weight: 600; }
+QPushButton#btnAdd:hover   { background: #3F5F8F; border-color: #3F5F8F; }
+QPushButton#btnAdd:pressed { background: #34507A; }
+</string>
+  </property>
   <layout class="QVBoxLayout" name="mainLayout">
+   <property name="spacing">
+    <number>12</number>
+   </property>
    <property name="leftMargin">
-    <number>20</number>
+    <number>28</number>
    </property>
    <property name="topMargin">
-    <number>20</number>
+    <number>28</number>
    </property>
    <property name="rightMargin">
-    <number>20</number>
+    <number>28</number>
    </property>
    <property name="bottomMargin">
-    <number>20</number>
+    <number>28</number>
    </property>
    <item>
     <widget class="QLabel" name="lblHeader">
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:600;&quot;&gt;Новий автомобіль&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>Новий автомобіль</string>
      </property>
     </widget>
    </item>
    <item>
     <layout class="QFormLayout" name="formLayout">
+     <property name="labelAlignment">
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+     </property>
+     <property name="horizontalSpacing">
+      <number>16</number>
+     </property>
      <property name="verticalSpacing">
       <number>12</number>
      </property>
@@ -179,6 +250,9 @@
      </item>
      <item row="6" column="1">
       <widget class="QDoubleSpinBox" name="numMileage">
+       <property name="decimals">
+        <number>0</number>
+       </property>
        <property name="maximum">
         <double>1000000.000000000000000</double>
        </property>
@@ -224,17 +298,39 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="buttonLayout">
+     <property name="spacing">
+      <number>8</number>
+     </property>
      <item>
-      <widget class="QPushButton" name="btnAdd">
+      <spacer name="buttonSpacer">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>10</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnCancel">
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
        <property name="text">
-        <string>Зберегти</string>
+        <string>Скасувати</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btnCancel">
+      <widget class="QPushButton" name="btnAdd">
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
        <property name="text">
-        <string>Скасувати</string>
+        <string>Зберегти</string>
        </property>
       </widget>
      </item>

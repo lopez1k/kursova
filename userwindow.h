@@ -38,6 +38,8 @@ private slots:
 
     void on_btnGroupAndSort_clicked();
 
+    void refreshCatalog();
+
 private:
     Ui::UserWindow* ui;
     UserManager* usermanager;
@@ -45,7 +47,8 @@ private:
     RentalManager* rentalmanager;
     QWidget* loginWindow;
     bool isAscending = true;
-    void applyFilters();
+    bool currentAscending = true;
+    QList<Car> applyFilters();
     QWidget* createCarCardWidget(const Car& car) const;
     void loadCarsList(QListWidget* ui, const QList<Car>& result, bool isAvailable = true) const;
 };
