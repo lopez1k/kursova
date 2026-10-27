@@ -16,7 +16,7 @@ class AddCarWindow : public QWidget
     Q_OBJECT
 
 public:
-    explicit AddCarWindow(UserManager* usermanager, CarManager* carmanager, RentalManager* rentalmanager, QWidget* adminWindow = nullptr, Car* car = {}, QWidget *parent = nullptr);
+    explicit AddCarWindow(UserManager* usermanager, CarManager* carmanager, RentalManager* rentalmanager, QWidget* adminWindow = nullptr, const QString& carId = "", QWidget *parent = nullptr);
     ~AddCarWindow();
 
 private slots:
@@ -30,7 +30,7 @@ private:
     CarManager* carmanager;
     RentalManager* rentalmanager;
     QWidget* adminWindow;
-    Car* car;
+    QString carId;
 };
 
 #endif // ADDCARWINDOW_H

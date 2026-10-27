@@ -26,7 +26,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         resources.qrc
         user.h user.cpp
         usermanager.h usermanager.cpp
+        appexception.h appexception.cpp
         userexception.h userexception.cpp
+        rentalexception.h rentalexception.cpp
         passwordhasher.h passwordhasher.cpp
         adminwindow.h adminwindow.cpp adminwindow.ui
         userwindow.h userwindow.cpp userwindow.ui

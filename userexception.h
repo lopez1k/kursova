@@ -1,10 +1,9 @@
 #ifndef USEREXCEPTION_H
 #define USEREXCEPTION_H
 
-#include <stdexcept>
-#include <QString>
+#include "appexception.h"
 
-class UserException : public std::runtime_error {
+class UserException : public AppException {
 public:
     explicit UserException(const QString& msg);
 };

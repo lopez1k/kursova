@@ -10,7 +10,7 @@
 class UserManager {
 private:
     QList<User> users;
-    User* currentUser;
+    QString currentUserId;
     QString filename;
     int nextId = 1;
     QString generateId();
@@ -24,7 +24,7 @@ public:
     bool login(const QString& _email, const QString& _password);
     void logout();
 
-    User* getCurrentUser() const;
+    User* getCurrentUser();
     User* findUserByEmail(const QString& email);
     User* findUserById(const QString& id);
 

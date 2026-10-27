@@ -1,6 +1,6 @@
 #include "userexception.h"
 
-UserException::UserException(const QString& msg) : std::runtime_error(msg.toUtf8().constData()) {}
+UserException::UserException(const QString& msg) : AppException(msg) {}
 
 UserNotFoundException::UserNotFoundException(const QString& email) : UserException("Користувача з email " + email + " не знайдено.") {}
 

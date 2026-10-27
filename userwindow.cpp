@@ -172,7 +172,7 @@ void UserWindow::on_carsListWidget_itemDoubleClicked(QListWidgetItem *item) {
     if (!user) {
         return;
     }
-    qDebug() << item->data(Qt::UserRole).toString();
+    QString userId = user->getId();
     QString carId = item->data(Qt::UserRole).toString();
 
     Car* selectedCar = carmanager->getCarById(carId);
@@ -189,21 +189,23 @@ void UserWindow::on_carsListWidget_itemDoubleClicked(QListWidgetItem *item) {
         QDate endDate = dialog.getEndDate();
         double totalPrice = dialog.getTotalPrice();
 
-        QDateTime end(dialog.getEndDate(), QTime(23, 59));
+        QDateTime start = (startDate == QDate::currentDate())
+                              ? QDateTime::currentDateTime()
+                              : QDateTime(startDate, QTime(0, 0));
+        QDateTime end(endDate, QTime(23, 59));
+        try {
+            rentalmanager->rentCar(userId, carId, start, end);
 
-        rentalmanager->rentCar(user->getId(), selectedCar->getId(), end);
-        bool success = true;
-
-        if (success) {
             QMessageBox::information(this, "Успіх",
                                      QString("Автомобіль успішно заброньовано на %1 днів!\nСума: %2 грн")
                                          .arg(startDate.daysTo(endDate))
                                          .arg(totalPrice, 0, 'f', 2));
 
             loadCarsList(ui->carsListWidget, carmanager->getAllCars(), true);
-            rentalmanager->loadRentalsTable(ui->myRentalsTable, user->getId());
-        } else {
-            QMessageBox::warning(this, "Помилка", "Не вдалося оформити бронювання.");
+            rentalmanager->loadRentalsTable(ui->myRentalsTable, userId);
+        }
+        catch (const AppException& ex) {
+            QMessageBox::warning(this, "Не вдалося оформити бронювання", ex.what());
         }
     }
 }
@@ -284,10 +286,6 @@ void UserWindow::on_btnSortMerge_clicked()
 void UserWindow::on_btnMinMaxMileage_clicked()
 {
     QList<Car> cars = applyFilters();
-    if (cars.isEmpty()) {
-        ui->carsListWidget->clear();
-        return;
-    }
 
     QList<Car> available;
     QList<Car> result;
@@ -297,6 +295,11 @@ void UserWindow::on_btnMinMaxMileage_clicked()
             continue;
         }
         available.append(car);
+    }
+
+    if (available.isEmpty()) {
+        ui->carsListWidget->clear();
+        return;
     }
 
     double minMileage = available[0].getMileage();

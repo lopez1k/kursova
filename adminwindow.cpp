@@ -229,9 +229,12 @@ void AdminWindow::on_carsListWidget_itemClicked(QListWidgetItem *item)
 
 void AdminWindow::on_btnEditCar_clicked()
 {
-    QString carId = ui->carsListWidget->currentItem()->data(Qt::UserRole).toString();
-    Car* car = carmanager->getCarById(carId);
-    AddCarWindow* addcarui = new AddCarWindow(this->usermanager, this->carmanager, this->rentalmanager, this, car);
+    QListWidgetItem* item = ui->carsListWidget->currentItem();
+    if (!item) {
+        return;
+    }
+    QString carId = item->data(Qt::UserRole).toString();
+    AddCarWindow* addcarui = new AddCarWindow(this->usermanager, this->carmanager, this->rentalmanager, this, carId);
     addcarui->setAttribute(Qt::WA_DeleteOnClose);
     addcarui->show();
     ui->btnEditCar->setEnabled(false);
@@ -243,11 +246,21 @@ void AdminWindow::on_btnEditCar_clicked()
 
 void AdminWindow::on_btnDeleteCar_clicked()
 {
-    QString carId = ui->carsListWidget->currentItem()->data(Qt::UserRole).toString();
+    QListWidgetItem* item = ui->carsListWidget->currentItem();
+    if (!item) {
+        return;
+    }
+    QString carId = item->data(Qt::UserRole).toString();
     Car* car = carmanager->getCarById(carId);
+    if (!car) {
+        return;
+    }
+    QString carName = car->getBrand() + " " + car->getModel();
+
     QMessageBox::StandardButton reply;
-    reply = QMessageBox::question(this, "Видалення " + car->getBrand() + " " + car->getModel(), "Ви справді хочете видалити це авто?", QMessageBox::Yes | QMessageBox::No);
-    if (reply == QMessageBox::Yes) {
+    reply = QMessageBox::question(this, "Видалення " + carName, "Ви справді хочете видалити це авто?", QMessageBox::Yes | QMessageBox::No);
+    car = carmanager->getCarById(carId);
+    if (reply == QMessageBox::Yes && car) {
         car->setStatus(Status::Archived);
         loadCarsList(ui->carsListWidget, carmanager->getAllCars());
     }

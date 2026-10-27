@@ -94,6 +94,7 @@ Car* CarManager::getCarById(const QString& _uid) {
             return &c;
         }
     }
+    return nullptr;
 }
 
 

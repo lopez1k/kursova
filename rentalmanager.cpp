@@ -71,28 +71,21 @@ void RentalManager::loadFromJson() {
 }
 
 
-void RentalManager::rentCar(const QString& _userId, const QString& _carId, const QDateTime& _endDate) {
-    if (usermanager.findUserById(_userId) == nullptr)
-        return ;
+void RentalManager::rentCar(const QString& _userId, const QString& _carId, const QDateTime& _startDate, const QDateTime& _endDate) {
+    usermanager.findUserById(_userId);
 
     Car* car = carmanager.getCarById(_carId);
     if (car == nullptr)
-        return;
-
-    if (car->getStatus() == Status::Archived)
-        return;
+        throw CarNotFoundException(_carId);
 
     if (isCarRented(_carId) || car->getStatus() != Status::Available)
-        return;
+        throw CarNotAvailableException(car->getBrand() + " " + car->getModel());
 
-    QDateTime start = QDateTime::currentDateTime();
-    if (_endDate <= start)
-        return;
+    if (_startDate.date() < QDate::currentDate() || _endDate <= _startDate)
+        throw InvalidRentalPeriodException();
 
-    rentals.append(Rental(generateId(), _userId, _carId, start, _endDate, car->getRentPrice()));
+    rentals.append(Rental(generateId(), _userId, _carId, _startDate, _endDate, car->getRentPrice()));
     car->setStatus(Status::Taken);
-
-    return;
 }
 
 bool RentalManager::completeRental(const QString& rentalId) {
