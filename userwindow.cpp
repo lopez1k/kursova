@@ -75,6 +75,15 @@ QWidget* UserWindow::createCarCardWidget(const Car& car) const {
     QLabel* price = new QLabel(QString("%1 ₴ / доба").arg(ua.toString(p, 'f', decimals)));
     price->setObjectName("carPrice");
 
+    // Вартість за задану кількість днів
+    const int days = ui->spinDays->value();
+    const double total = days * p;
+    const int totalDecimals = (std::floor(total) == total) ? 0 : 2;
+    QLabel* costN = new QLabel(QString("Вартість за %1 дн.: %2 ₴")
+                                   .arg(days)
+                                   .arg(ua.toString(total, 'f', totalDecimals)));
+    costN->setObjectName("carCostN");
+
     // Статус
     QLabel* status = new QLabel();
     if (car.getStatus() == Status::Taken) {
@@ -97,6 +106,7 @@ QWidget* UserWindow::createCarCardWidget(const Car& car) const {
     layout->addWidget(title);
     layout->addWidget(meta);
     layout->addWidget(mileage);
+    layout->addWidget(costN);
     layout->addStretch();
     layout->addWidget(line);
     layout->addLayout(bottom);
@@ -112,7 +122,7 @@ void UserWindow::loadCarsList(QListWidget* list, const QList<Car>& result, bool 
     list->setMovement(QListView::Static);
     list->setSpacing(4);
 
-    const QSize cardSize(220, 132);
+    const QSize cardSize(220, 156);
     const QSize itemSize(cardSize.width() + 12, cardSize.height() + 12);   // + відступи контейнера
 
     for (const Car& car : result) {
@@ -231,81 +241,16 @@ QList<Car> UserWindow::applyFilters()
     return result;
 }
 
-void UserWindow::refreshCatalog()
+QList<Car> UserWindow::selectMinMaxMileage(const QList<Car>& cars) const
 {
-    ui->btnSortMerge->setText("Сортувати ціною (за зростанням)");
-    loadCarsList(ui->carsListWidget, carmanager->mergeSort(applyFilters(), this->currentAscending), true);
-}
-
-
-
-void UserWindow::on_comboCategory_currentIndexChanged(int index)
-{
-    refreshCatalog();
-}
-
-
-void UserWindow::on_spinMinSeats_valueChanged(int arg1)
-{
-    refreshCatalog();
-
-}
-
-
-void UserWindow::on_spinMaxPrice_valueChanged(double arg1)
-{
-    refreshCatalog();
-}
-
-
-void UserWindow::on_btnSortMerge_clicked()
-{
-    QList<Car> cars = applyFilters();
-    QList<Car> result;
-
-    for(const Car& car : cars) {
-        if (car.getStatus() != Status::Available) {
-            continue;
-        }
-        result.append(car);
-    }
-    this->currentAscending = this->isAscending;
-    result = carmanager->mergeSort(result, this->isAscending);
-    loadCarsList(ui->carsListWidget, result);
-    if (this->isAscending == true) {
-        ui->btnSortMerge->setText("Сортувати ціною (за спаданням)");
-    }
-    else {
-        ui->btnSortMerge->setText("Сортувати ціною (за зростанням)");
-    }
-    this->isAscending = !(this->isAscending);
-}
-
-
-
-void UserWindow::on_btnMinMaxMileage_clicked()
-{
-    QList<Car> cars = applyFilters();
-
-    QList<Car> available;
-    QList<Car> result;
-
-    for(const Car& car : cars) {
-        if (car.getStatus() != Status::Available) {
-            continue;
-        }
-        available.append(car);
+    if (cars.isEmpty()) {
+        return {};
     }
 
-    if (available.isEmpty()) {
-        ui->carsListWidget->clear();
-        return;
-    }
+    double minMileage = cars[0].getMileage();
+    double maxMileage = cars[0].getMileage();
 
-    double minMileage = available[0].getMileage();
-    double maxMileage = available[0].getMileage();
-
-    for(const Car& car : available) {
+    for (const Car& car : cars) {
         if (car.getMileage() < minMileage) {
             minMileage = car.getMileage();
         }
@@ -314,23 +259,103 @@ void UserWindow::on_btnMinMaxMileage_clicked()
         }
     }
 
-    for(const Car& car : available) {
+    QList<Car> result;
+    for (const Car& car : cars) {
         if (car.getMileage() == minMileage || car.getMileage() == maxMileage) {
             result.append(car);
         }
     }
-    loadCarsList(ui->carsListWidget, result);
+    return result;
 }
 
-void UserWindow::on_btnGroupAndSort_clicked() {
-    QList<Car> cars = applyFilters();
-
+QList<Car> UserWindow::groupByClassYear(QList<Car> cars) const
+{
     std::sort(cars.begin(), cars.end(), [](const Car& a, const Car& b) {
         if (a.getCategory() != b.getCategory()) {
             return static_cast<int>(a.getCategory()) < static_cast<int>(b.getCategory());
         }
         return a.getManufacturerYear() > b.getManufacturerYear();
     });
+    return cars;
+}
 
-    loadCarsList(ui->carsListWidget, cars);
+void UserWindow::renderCatalog()
+{
+    // щоразу беремо авто з applyFilters і лишаємо лише доступні
+    QList<Car> available;
+    for (const Car& car : applyFilters()) {
+        if (car.getStatus() == Status::Available) {
+            available.append(car);
+        }
+    }
+
+    // далі — залежно від обраного режиму
+    QList<Car> result;
+    switch (mode) {
+    case CatalogMode::MinMaxMileage:
+        result = selectMinMaxMileage(available);
+        break;
+    case CatalogMode::GroupClassYear:
+        result = groupByClassYear(available);
+        break;
+    case CatalogMode::SortPrice:
+    default:
+        result = carmanager->mergeSort(available, currentAscending);
+        break;
+    }
+
+    loadCarsList(ui->carsListWidget, result, false);
+}
+
+
+void UserWindow::on_comboCategory_currentIndexChanged(int index)
+{
+    renderCatalog();
+}
+
+
+void UserWindow::on_spinMinSeats_valueChanged(int arg1)
+{
+    renderCatalog();
+}
+
+
+void UserWindow::on_spinMaxPrice_valueChanged(double arg1)
+{
+    renderCatalog();
+}
+
+
+void UserWindow::on_spinDays_valueChanged(int arg1)
+{
+    renderCatalog();
+}
+
+
+void UserWindow::on_btnSortMerge_clicked()
+{
+    mode = CatalogMode::SortPrice;
+    currentAscending = isAscending;
+    if (isAscending) {
+        ui->btnSortMerge->setText("Сортувати ціною (за спаданням)");
+    }
+    else {
+        ui->btnSortMerge->setText("Сортувати ціною (за зростанням)");
+    }
+    isAscending = !isAscending;
+    renderCatalog();
+}
+
+
+void UserWindow::on_btnMinMaxMileage_clicked()
+{
+    mode = CatalogMode::MinMaxMileage;
+    renderCatalog();
+}
+
+
+void UserWindow::on_btnGroupAndSort_clicked()
+{
+    mode = CatalogMode::GroupClassYear;
+    renderCatalog();
 }

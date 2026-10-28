@@ -80,6 +80,9 @@ void UserManager::addUser(const User& _user) {
 }
 
 bool UserManager::login(const QString& _email, const QString& _password) {
+    if(_password.length() < 8) {
+        throw PasswordTooShortException(8);
+    }
     User* user = this->findUserByEmail(_email);
 
     if (!PasswordHasher::verifyPassword(_password, user->getPassword())) {

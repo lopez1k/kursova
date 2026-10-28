@@ -32,6 +32,14 @@ private:
 
 public:
     Car(const QString& _id = "C-1", const QString& _brand = "Meno", const QString& _model = "Regan", const Category& _category = Category::Econom, const int& _manufacturerYear = 2004, const int& _seats = 4, const double& _rentPrice = 751.0, const double& mileage = 196.42, const Status& _status = Status::NotAvailable);
+    
+    // копіювання лишаємо як було (неявне) — потрібне для QList<Car>
+    Car(const Car& other) = default;
+    Car& operator=(const Car& other) = default;
+
+    Car(Car&& other) noexcept;
+    Car& operator=(Car&& other) noexcept;
+
     QString getId() const;
     QString getBrand() const;
     QString getModel() const;

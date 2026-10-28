@@ -110,6 +110,7 @@ QLabel#carTitle { font-size: 11pt; font-weight: 600; }
 QLabel#carMeta  { color: #5B6573; }
 QFrame#carLine  { background: #E6E9ED; border: none; }
 QLabel#carPrice { font-weight: 600; }
+QLabel#carCostN { color: #2E6B2E; font-weight: 600; }
 QLabel#carStatusFree { color: #2E6B2E; font-size: 9pt; }
 QLabel#carStatusBusy { color: #6B7280; font-size: 9pt; }
 
@@ -441,6 +442,32 @@ QLabel#lblProfileName, QLabel#lblProfileEmail { font-size: 11pt; }
                 </property>
                 <property name="value">
                  <double>10000000.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="lblDays">
+                <property name="text">
+                 <string>Днів:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="spinDays">
+                <property name="minimumSize">
+                 <size>
+                  <width>90</width>
+                  <height>34</height>
+                 </size>
+                </property>
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>365</number>
+                </property>
+                <property name="value">
+                 <number>1</number>
                 </property>
                </widget>
               </item>
