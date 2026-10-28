@@ -1,6 +1,6 @@
 #include "usermanager.h"
 
-UserManager::UserManager(QString _filename) : currentUser(nullptr), filename(_filename) {
+UserManager::UserManager(QString _filename) : filename(_filename) {
     loadFromJson();
 }
 
@@ -80,19 +80,22 @@ void UserManager::addUser(const User& _user) {
 }
 
 bool UserManager::login(const QString& _email, const QString& _password) {
+    if(_password.length() < 8) {
+        throw PasswordTooShortException(8);
+    }
     User* user = this->findUserByEmail(_email);
 
     if (!PasswordHasher::verifyPassword(_password, user->getPassword())) {
         throw InvalidPasswordException();
     }
 
-    this->currentUser = user;
+    this->currentUserId = user->getId();
     return true;
 }
 
 
 void UserManager::logout() {
-    this->currentUser = nullptr;
+    this->currentUserId.clear();
 }
 
 User* UserManager::findUserByEmail(const QString& email) {
@@ -118,8 +121,13 @@ User* UserManager::findUserById(const QString& id) {
 }
 
 
-User* UserManager::getCurrentUser() const {
-    return this->currentUser;
+User* UserManager::getCurrentUser() {
+    for (User& u : users) {
+        if (u.getId() == this->currentUserId) {
+            return &u;
+        }
+    }
+    return nullptr;
 }
 
 

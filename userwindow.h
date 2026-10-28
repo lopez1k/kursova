@@ -38,14 +38,28 @@ private slots:
 
     void on_btnGroupAndSort_clicked();
 
+    void on_spinDays_valueChanged(int arg1);
+
+    void renderCatalog();
+
 private:
+    enum class CatalogMode {
+        SortPrice,
+        MinMaxMileage,
+        GroupClassYear
+    };
+
     Ui::UserWindow* ui;
     UserManager* usermanager;
     CarManager* carmanager;
     RentalManager* rentalmanager;
     QWidget* loginWindow;
     bool isAscending = true;
-    void applyFilters();
+    bool currentAscending = true;
+    CatalogMode mode = CatalogMode::SortPrice;
+    QList<Car> applyFilters();
+    QList<Car> selectMinMaxMileage(const QList<Car>& cars) const;
+    QList<Car> groupByClassYear(QList<Car> cars) const;
     QWidget* createCarCardWidget(const Car& car) const;
     void loadCarsList(QListWidget* ui, const QList<Car>& result, bool isAvailable = true) const;
 };

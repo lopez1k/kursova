@@ -3,6 +3,7 @@
 
 #include "QList"
 #include "rental.h"
+#include "rentalexception.h"
 #include "carmanager.h"
 #include "usermanager.h"
 
@@ -22,7 +23,7 @@ public:
     void saveToJson() const;
     void loadFromJson();
 
-    void rentCar(const QString& _userId, const QString& _carId, const QDateTime& _endDate);
+    void rentCar(const QString& _userId, const QString& _carId, const QDateTime& _startDate, const QDateTime& _endDate);
     bool completeRental(const QString& _id);
     bool cancelRental(const QString& _id);
 

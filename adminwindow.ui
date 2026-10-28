@@ -6,14 +6,100 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>850</width>
-    <height>600</height>
+    <width>1040</width>
+    <height>680</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Панель Адміністратора — Оренда Авто</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">
+QWidget { font-family: &quot;Segoe UI&quot;; font-size: 10pt; color: #1F2933; }
+QWidget#AdminWindow { background: #F4F6F8; }
+
+/* ---- Бічне меню ---- */
+QFrame#sidebarFrame { background: #1E2430; border: none; }
+QLabel#titleLabel { color: #E9EDF2; font-size: 13pt; font-weight: 600; padding: 4px 6px 2px 6px; }
+QLabel#welcomeLabel { color: #9AA3B2; padding: 0 6px 18px 6px; }
+QFrame#sidebarFrame QPushButton {
+    background: transparent; color: #C3CAD6; border: none; border-radius: 6px;
+    padding: 10px 12px; text-align: left; font-size: 11pt;
+}
+QFrame#sidebarFrame QPushButton:hover   { background: #2A3240; color: #FFFFFF; }
+QFrame#sidebarFrame QPushButton:checked { background: #3A4559; color: #FFFFFF; }
+QPushButton#btnLogout { border: 1px solid #3A4352; margin-top: 10px; }
+
+/* ---- Фільтри ---- */
+QFrame#filterFrame { background: #FFFFFF; border: 1px solid #DDE2E8; border-radius: 6px; }
+QFrame#filterFrame QLabel { background: transparent; border: none; }
+QComboBox {
+    background: #FFFFFF; border: 1px solid #C9D0D9; border-radius: 4px;
+    padding: 5px 26px 5px 8px; min-height: 22px;
+}
+QComboBox:hover { border-color: #A9B8CC; }
+QComboBox:focus { border-color: #4A6FA5; }
+QComboBox::drop-down {
+    subcontrol-origin: padding; subcontrol-position: center right;
+    width: 24px; border: none; background: transparent;
+}
+QComboBox::down-arrow {
+    image: none; width: 0px; height: 0px;
+    border-left: 4px solid transparent; border-right: 4px solid transparent;
+    border-top: 5px solid #5B6573;
+}
+QComboBox::down-arrow:on { border-top: none; border-bottom: 5px solid #5B6573; }
+QComboBox QAbstractItemView {
+    background: #FFFFFF; border: 1px solid #C9D0D9; outline: 0; padding: 4px;
+    selection-background-color: #EEF3FA; selection-color: #1F2933;
+}
+
+/* ---- Кнопки дій з авто ---- */
+QWidget#carsPage QPushButton {
+    background: #F4F6F8; border: 1px solid #DDE2E8; border-radius: 4px;
+    padding: 8px 16px; min-height: 20px;
+}
+QWidget#carsPage QPushButton:hover    { background: #EAEEF3; border-color: #C9D0D9; }
+QWidget#carsPage QPushButton:pressed  { background: #DFE5EC; }
+QWidget#carsPage QPushButton:disabled { background: #F4F6F8; border-color: #E6E9ED; color: #A0A8B4; }
+QPushButton#btnAddCar { background: #4A6FA5; border-color: #4A6FA5; color: #FFFFFF; font-weight: 600; }
+QPushButton#btnAddCar:hover   { background: #3F5F8F; border-color: #3F5F8F; }
+QPushButton#btnAddCar:pressed { background: #34507A; }
+QPushButton#btnDeleteCar:enabled { color: #B42318; border-color: #E8C4C0; background: #FFFFFF; }
+QPushButton#btnDeleteCar:enabled:hover { background: #FDF1F0; border-color: #D9A39D; }
+
+/* ---- Картки авто (createCarCardWidget) ---- */
+QListWidget#carsListWidget { background: transparent; border: none; outline: 0; }
+QListWidget#carsListWidget::item,
+QListWidget#carsListWidget::item:hover,
+QListWidget#carsListWidget::item:selected { background: transparent; border: none; }
+QFrame#carCard { background: #FFFFFF; border: 1px solid #DDE2E8; border-radius: 6px; }
+QFrame#carCard:hover { border-color: #A9B8CC; }
+QFrame#carCard[selected=&quot;true&quot;] { background: #F3F7FC; border: 2px solid #4A6FA5; }
+QFrame#carCard QLabel { background: transparent; border: none; }
+QLabel#carTitle { font-size: 11pt; font-weight: 600; }
+QLabel#carMeta  { color: #5B6573; }
+QFrame#carLine  { background: #E6E9ED; border: none; }
+QLabel#carPrice { font-weight: 600; }
+QLabel#carStatusFree { color: #2E6B2E; font-size: 9pt; font-weight: 600; }
+QLabel#carStatusBusy { color: #A15C07; font-size: 9pt; font-weight: 600; }
+QLabel#carStatusOff  { color: #B42318; font-size: 9pt; font-weight: 600; }
+
+/* ---- Таблиці ---- */
+QTableWidget {
+    background: #FFFFFF; border: 1px solid #DDE2E8; border-radius: 6px;
+    gridline-color: #E6E9ED; selection-background-color: #EEF3FA; selection-color: #1F2933;
+}
+QHeaderView::section {
+    background: #F0F2F5; border: none; border-bottom: 1px solid #DDE2E8;
+    padding: 8px 10px; font-weight: 600;
+}
+</string>
+  </property>
   <layout class="QHBoxLayout" name="mainHorizontalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -30,24 +116,39 @@
     <widget class="QFrame" name="sidebarFrame">
      <property name="minimumSize">
       <size>
-       <width>200</width>
+       <width>210</width>
        <height>0</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>220</width>
+       <width>230</width>
        <height>16777215</height>
       </size>
      </property>
      <property name="frameShape">
-      <enum>QFrame::Shape::StyledPanel</enum>
+      <enum>QFrame::Shape::NoFrame</enum>
      </property>
      <layout class="QVBoxLayout" name="sidebarLayout">
+      <property name="spacing">
+       <number>4</number>
+      </property>
+      <property name="leftMargin">
+       <number>14</number>
+      </property>
+      <property name="topMargin">
+       <number>22</number>
+      </property>
+      <property name="rightMargin">
+       <number>14</number>
+      </property>
+      <property name="bottomMargin">
+       <number>22</number>
+      </property>
       <item>
        <widget class="QLabel" name="titleLabel">
         <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:600;&quot;&gt;CarRental Admin&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>CarRental Admin</string>
         </property>
        </widget>
       </item>
@@ -56,39 +157,69 @@
         <property name="text">
          <string>Вітаємо, Адміністратор</string>
         </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
       <item>
-       <spacer name="topSpacer">
-        <property name="orientation">
-         <enum>Qt::Orientation::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
        <widget class="QPushButton" name="btnCars">
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
         <property name="text">
          <string>Автопарк</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="btnUsers">
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
         <property name="text">
          <string>Користувачі</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="btnRentals">
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
         <property name="text">
-         <string> Бронювання</string>
+         <string>Бронювання</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnLogout">
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="text">
+         <string>Вийти</string>
         </property>
        </widget>
       </item>
@@ -105,106 +236,183 @@
         </property>
        </spacer>
       </item>
-      <item>
-       <widget class="QPushButton" name="btnLogout">
-        <property name="text">
-         <string>Вийти</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>
    <item>
     <layout class="QVBoxLayout" name="contentLayout">
+     <property name="spacing">
+      <number>14</number>
+     </property>
+     <property name="leftMargin">
+      <number>28</number>
+     </property>
+     <property name="topMargin">
+      <number>24</number>
+     </property>
+     <property name="rightMargin">
+      <number>28</number>
+     </property>
+     <property name="bottomMargin">
+      <number>24</number>
+     </property>
      <item>
       <layout class="QHBoxLayout" name="headerLayout"/>
      </item>
      <item>
       <widget class="QStackedWidget" name="stackedWidget">
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
        <widget class="QWidget" name="carsPage">
         <layout class="QVBoxLayout" name="carsLayout">
+         <property name="spacing">
+          <number>14</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <item>
-          <layout class="QHBoxLayout" name="filterLayout">
-           <item>
-            <widget class="QLabel" name="lblCategoryFilter">
-             <property name="text">
-              <string>Категорія:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="categoryFilter">
-             <item>
+          <widget class="QFrame" name="filterFrame">
+           <layout class="QHBoxLayout" name="filterLayout">
+            <property name="spacing">
+             <number>8</number>
+            </property>
+            <property name="leftMargin">
+             <number>14</number>
+            </property>
+            <property name="topMargin">
+             <number>12</number>
+            </property>
+            <property name="rightMargin">
+             <number>14</number>
+            </property>
+            <property name="bottomMargin">
+             <number>12</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="lblCategoryFilter">
               <property name="text">
-               <string>Усі</string>
+               <string>Категорія:</string>
               </property>
-             </item>
-             <item>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="categoryFilter">
+              <property name="minimumSize">
+               <size>
+                <width>130</width>
+                <height>34</height>
+               </size>
+              </property>
+              <item>
+               <property name="text">
+                <string>Усі</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Економ</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Комфорт</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Бізнес</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item>
+             <spacer name="filterGap">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Policy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>14</width>
+                <height>10</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="lblStatusFilter">
               <property name="text">
-               <string>Економ</string>
+               <string>Статус:</string>
               </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Комфорт</string>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="statusFilter">
+              <property name="minimumSize">
+               <size>
+                <width>130</width>
+                <height>34</height>
+               </size>
               </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Бізнес</string>
+              <item>
+               <property name="text">
+                <string>Усі</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Доступно</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Зайнято</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Недоступно</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item>
+             <spacer name="filterSpacer">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
               </property>
-             </item>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="lblStatusFilter">
-             <property name="text">
-              <string>Статус:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="statusFilter">
-             <item>
-              <property name="text">
-               <string>Усі</string>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
               </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Доступно</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Зайнято</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Недоступно</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item>
-            <spacer name="filterSpacer">
-             <property name="orientation">
-              <enum>Qt::Orientation::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
          </item>
          <item>
           <widget class="QListWidget" name="carsListWidget">
+           <property name="frameShape">
+            <enum>QFrame::Shape::NoFrame</enum>
+           </property>
+           <property name="horizontalScrollBarPolicy">
+            <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+           </property>
            <property name="movement">
             <enum>QListView::Movement::Static</enum>
            </property>
@@ -212,7 +420,7 @@
             <enum>QListView::ResizeMode::Adjust</enum>
            </property>
            <property name="spacing">
-            <number>10</number>
+            <number>4</number>
            </property>
            <property name="viewMode">
             <enum>QListView::ViewMode::IconMode</enum>
@@ -221,8 +429,17 @@
          </item>
          <item>
           <layout class="QHBoxLayout" name="carsActionLayout">
+           <property name="spacing">
+            <number>8</number>
+           </property>
            <item>
             <widget class="QPushButton" name="btnAddCar">
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(0, 0, 0);</string>
+             </property>
              <property name="text">
               <string>Додати авто</string>
              </property>
@@ -232,6 +449,12 @@
             <widget class="QPushButton" name="btnEditCar">
              <property name="enabled">
               <bool>false</bool>
+             </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(0, 0, 0);</string>
              </property>
              <property name="text">
               <string>Редагувати</string>
@@ -243,10 +466,29 @@
              <property name="enabled">
               <bool>false</bool>
              </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(0, 0, 0);</string>
+             </property>
              <property name="text">
               <string>Видалити</string>
              </property>
             </widget>
+           </item>
+           <item>
+            <spacer name="actionsSpacer">
+             <property name="orientation">
+              <enum>Qt::Orientation::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>10</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </item>
@@ -254,6 +496,18 @@
        </widget>
        <widget class="QWidget" name="usersPage">
         <layout class="QVBoxLayout" name="usersLayout">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <item>
           <widget class="QTableWidget" name="usersTable">
            <property name="editTriggers">
@@ -262,6 +516,18 @@
            <property name="selectionBehavior">
             <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
            </property>
+           <property name="showGrid">
+            <bool>false</bool>
+           </property>
+           <attribute name="horizontalHeaderHighlightSections">
+            <bool>false</bool>
+           </attribute>
+           <attribute name="horizontalHeaderStretchLastSection">
+            <bool>true</bool>
+           </attribute>
+           <attribute name="verticalHeaderVisible">
+            <bool>false</bool>
+           </attribute>
            <column>
             <property name="text">
              <string>ID</string>
@@ -288,8 +554,38 @@
        </widget>
        <widget class="QWidget" name="rentalsPage">
         <layout class="QVBoxLayout" name="rentalsLayout">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <item>
           <widget class="QTableWidget" name="rentalsTable">
+           <property name="editTriggers">
+            <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
+           </property>
+           <property name="showGrid">
+            <bool>false</bool>
+           </property>
+           <attribute name="horizontalHeaderHighlightSections">
+            <bool>false</bool>
+           </attribute>
+           <attribute name="horizontalHeaderStretchLastSection">
+            <bool>true</bool>
+           </attribute>
+           <attribute name="verticalHeaderVisible">
+            <bool>false</bool>
+           </attribute>
            <column>
             <property name="text">
              <string>ID</string>

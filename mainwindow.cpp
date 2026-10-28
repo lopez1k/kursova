@@ -46,11 +46,14 @@ void MainWindow::on_pushButton_clicked()
         }
 
     }
+    catch(const PasswordTooShortException& ex) {
+        QMessageBox::warning(this, "Помилка входу", ex.what());
+    }
     catch (const UserNotFoundException& ex) {
-        QMessageBox::warning(this, "Помилка входу", "Користувача з такою поштою не знайдено.");
+        QMessageBox::warning(this, "Помилка входу", ex.what());
     }
     catch (const InvalidPasswordException& ex) {
-        QMessageBox::warning(this, "Помилка входу", "Введено невірний пароль.");
+        QMessageBox::warning(this, "Помилка входу", ex.what());
     }
     catch (const UserException& ex) {
         QMessageBox::critical(this, "Помилка", ex.what());

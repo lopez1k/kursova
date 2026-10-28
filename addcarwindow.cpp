@@ -1,18 +1,19 @@
 #include "addcarwindow.h"
 #include "ui_addcarwindow.h"
 
-AddCarWindow::AddCarWindow(UserManager* usermanager, CarManager* carmanager, RentalManager* rentalmanager, QWidget* adminWindow, Car* car, QWidget *parent)
+AddCarWindow::AddCarWindow(UserManager* usermanager, CarManager* carmanager, RentalManager* rentalmanager, QWidget* adminWindow, const QString& carId, QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::AddCarWindow)
     , usermanager(usermanager)
     , carmanager(carmanager)
     , rentalmanager(rentalmanager)
     , adminWindow(adminWindow)
+    , carId(carId)
 {
     ui->setupUi(this);
 
+    Car* car = carmanager->getCarById(carId);
     if(car) {
-        this->car = car;
         ui->txtBrand->setText(car->getBrand());
         ui->txtModel->setText(car->getModel());
         ui->numYear->setValue(car->getManufacturerYear());
@@ -46,10 +47,16 @@ void AddCarWindow::on_btnAdd_clicked()
     double mileage = ui->numMileage->value();
     double rentPrice = ui->numPrice->value();
 
-    if(!car) {
+    if(carId.isEmpty()) {
         carmanager->addCar(brand, model, category, manufacturerYear, seats, rentPrice, mileage, status);
     }
     else {
+        Car* car = carmanager->getCarById(carId);
+        if (!car) {
+            QMessageBox::warning(this, "Помилка", "Автомобіль не знайдено. Можливо, його вже видалено.");
+            this->close();
+            return;
+        }
         car->setBrand(brand);
         car->setModel(model);
         car->setCategory(category);

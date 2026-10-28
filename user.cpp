@@ -58,7 +58,7 @@ void User::setName(const QString& _name) {
 }
 
 void User::setPassword(const QString& _password) {
-    if (_password.length() > 8) {
+    if (_password.length() < 8) {
         throw PasswordTooShortException();
     }
 

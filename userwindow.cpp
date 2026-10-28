@@ -37,110 +37,115 @@ UserWindow::~UserWindow()
 {
     delete ui;
 }
-
 QWidget* UserWindow::createCarCardWidget(const Car& car) const {
+    QLocale ua(QLocale::Ukrainian);
 
-    QWidget* card = new QWidget();
+    QFrame* card = new QFrame();
     card->setObjectName("carCard");
-    card->setFixedSize(200, 160);
-
-    card->setStyleSheet(
-        "#carCard {"
-        "   background-color: #383838;"
-        "   border: 1px solid #555555;"
-        "   border-radius: 8px;"
-        "}"
-        "#carCard:hover {"
-        "   background-color: #424242;"
-        "   border: 1px solid #4CAF50;"
-        "}"
-        );
+    card->setAttribute(Qt::WA_Hover);
 
     QVBoxLayout* layout = new QVBoxLayout(card);
-    layout->setContentsMargins(12, 10, 12, 10);
+    layout->setContentsMargins(14, 12, 14, 12);
     layout->setSpacing(4);
 
+    // Назва
+    QLabel* title = new QLabel(QString("%1 %2").arg(car.getBrand(), car.getModel()));
+    title->setObjectName("carTitle");
 
-    QLabel* title = new QLabel(QString("%1 %2 <font color='#8a8a8a'>(%3)</font>")
-                                   .arg(car.getBrand(), car.getModel()).arg(car.getManufacturerYear()));
-    title->setStyleSheet("font-size: 13px; font-weight: bold; color: #ffffff; border: none; background: transparent;");
-
-
-    QFrame* line1 = new QFrame();
-    line1->setFrameShape(QFrame::HLine);
-    line1->setStyleSheet("color: #4a4a4a; background-color: #4a4a4a; max-height: 1px; border: none;");
-
-
-    QLabel* info = new QLabel(QString(
-                                  "Клас: <b>%1</b><br>"
-                                  "Місць: <b>%2</b><br>"
-                                  "Пробіг: <b>%3 км</b>")
+    // Клас · рік · місця
+    QLabel* meta = new QLabel(QString("%1 · %2 · %3 місць")
                                   .arg(car.getCategoryString())
-                                  .arg(car.getSeats())
-                                  .arg(car.getMileage()));
-    info->setStyleSheet("font-size: 11px; color: #cccccc; border: none; background: transparent; line-height: 130%;");
+                                  .arg(car.getManufacturerYear())
+                                  .arg(car.getSeats()));
+    meta->setObjectName("carMeta");
 
+    // Пробіг
+    QLabel* mileage = new QLabel(QString("Пробіг: %1 км")
+                                     .arg(ua.toString(qlonglong(car.getMileage()))));
+    mileage->setObjectName("carMeta");
 
-    QFrame* line2 = new QFrame();
-    line2->setFrameShape(QFrame::HLine);
-    line2->setStyleSheet("color: #4a4a4a; background-color: #4a4a4a; max-height: 1px; border: none;");
+    // Тонка лінія-роздільник
+    QFrame* line = new QFrame();
+    line->setObjectName("carLine");
+    line->setFixedHeight(1);
 
-    QLabel* price = new QLabel(QString("<font color='#4caf50'><b>%1 грн</b></font> <font color='#8a8a8a' size='2'>/ день</font>")
-                                   .arg(QString::number(car.getRentPrice(), 'f', 2)));
-    price->setStyleSheet("font-size: 13px; border: none; background: transparent;");
+    // Ціна (без копійок, якщо їх немає)
+    const double p = car.getRentPrice();
+    const int decimals = (std::floor(p) == p) ? 0 : 2;
+    QLabel* price = new QLabel(QString("%1 ₴ / доба").arg(ua.toString(p, 'f', decimals)));
+    price->setObjectName("carPrice");
+
+    // Вартість за задану кількість днів
+    const int days = ui->spinDays->value();
+    const double total = days * p;
+    const int totalDecimals = (std::floor(total) == total) ? 0 : 2;
+    QLabel* costN = new QLabel(QString("Вартість за %1 дн.: %2 ₴")
+                                   .arg(days)
+                                   .arg(ua.toString(total, 'f', totalDecimals)));
+    costN->setObjectName("carCostN");
+
+    // Статус
+    QLabel* status = new QLabel();
+    if (car.getStatus() == Status::Taken) {
+        status->setText("Орендовано");
+        status->setObjectName("carStatusBusy");
+    } else if (car.getStatus() == Status::NotAvailable) {
+        status->setText("Недоступний");
+        status->setObjectName("carStatusBusy");
+    } else {
+        status->setText("Доступний");
+        status->setObjectName("carStatusFree");
+    }
+
+    QHBoxLayout* bottom = new QHBoxLayout();
+    bottom->setContentsMargins(0, 4, 0, 0);
+    bottom->addWidget(price);
+    bottom->addStretch();
+    bottom->addWidget(status);
 
     layout->addWidget(title);
-    layout->addWidget(line1);
-    layout->addWidget(info);
-    layout->addWidget(line2);
-    layout->addWidget(price);
+    layout->addWidget(meta);
+    layout->addWidget(mileage);
+    layout->addWidget(costN);
+    layout->addStretch();
+    layout->addWidget(line);
+    layout->addLayout(bottom);
 
     return card;
 }
 
 
+void UserWindow::loadCarsList(QListWidget* list, const QList<Car>& result, bool isAvailable) const {
+    list->clear();
+    list->setViewMode(QListView::IconMode);
+    list->setResizeMode(QListView::Adjust);
+    list->setMovement(QListView::Static);
+    list->setSpacing(4);
 
-void UserWindow::loadCarsList(QListWidget* ui, const QList<Car>& result, bool isAvailable) const {
-    ui->clear();
-    ui->setViewMode(QListView::IconMode);
-    ui->setResizeMode(QListView::Adjust);
-    ui->setMovement(QListView::Static);
-
-    ui->setSpacing(6);
-
-
-    const QSize cardSize(200, 160);
-
-    const QSize itemSize(216, 176);
+    const QSize cardSize(220, 156);
+    const QSize itemSize(cardSize.width() + 12, cardSize.height() + 12);   // + відступи контейнера
 
     for (const Car& car : result) {
-        if (isAvailable) {
-            if (car.getStatus() == Status::NotAvailable || car.getStatus() == Status::Taken) {
-                continue;
-            }
+        if (isAvailable &&
+            (car.getStatus() == Status::NotAvailable || car.getStatus() == Status::Taken)) {
+            continue;
         }
 
-        QListWidgetItem* item = new QListWidgetItem(ui);
+        QListWidgetItem* item = new QListWidgetItem(list);
         item->setSizeHint(itemSize);
         item->setData(Qt::UserRole, car.getId());
 
-
+        // Прозорий контейнер навколо картки
         QWidget* container = new QWidget();
-
-
         QVBoxLayout* containerLayout = new QVBoxLayout(container);
-
-
-        containerLayout->setContentsMargins(8, 8, 8, 8);
+        containerLayout->setContentsMargins(6, 6, 6, 6);
         containerLayout->setAlignment(Qt::AlignCenter);
 
         QWidget* cardWidget = createCarCardWidget(car);
         cardWidget->setFixedSize(cardSize);
-
         containerLayout->addWidget(cardWidget);
 
-        ui->addItem(item);
-        ui->setItemWidget(item, container);
+        list->setItemWidget(item, container);
     }
 }
 
@@ -177,7 +182,7 @@ void UserWindow::on_carsListWidget_itemDoubleClicked(QListWidgetItem *item) {
     if (!user) {
         return;
     }
-    qDebug() << item->data(Qt::UserRole).toString();
+    QString userId = user->getId();
     QString carId = item->data(Qt::UserRole).toString();
 
     Car* selectedCar = carmanager->getCarById(carId);
@@ -194,26 +199,28 @@ void UserWindow::on_carsListWidget_itemDoubleClicked(QListWidgetItem *item) {
         QDate endDate = dialog.getEndDate();
         double totalPrice = dialog.getTotalPrice();
 
-        QDateTime end(dialog.getEndDate(), QTime(23, 59));
+        QDateTime start = (startDate == QDate::currentDate())
+                              ? QDateTime::currentDateTime()
+                              : QDateTime(startDate, QTime(0, 0));
+        QDateTime end(endDate, QTime(23, 59));
+        try {
+            rentalmanager->rentCar(userId, carId, start, end);
 
-        rentalmanager->rentCar(user->getId(), selectedCar->getId(), end);
-        bool success = true;
-
-        if (success) {
             QMessageBox::information(this, "Успіх",
                                      QString("Автомобіль успішно заброньовано на %1 днів!\nСума: %2 грн")
                                          .arg(startDate.daysTo(endDate))
                                          .arg(totalPrice, 0, 'f', 2));
 
             loadCarsList(ui->carsListWidget, carmanager->getAllCars(), true);
-            rentalmanager->loadRentalsTable(ui->myRentalsTable, user->getId());
-        } else {
-            QMessageBox::warning(this, "Помилка", "Не вдалося оформити бронювання.");
+            rentalmanager->loadRentalsTable(ui->myRentalsTable, userId);
+        }
+        catch (const AppException& ex) {
+            QMessageBox::warning(this, "Не вдалося оформити бронювання", ex.what());
         }
     }
 }
 
-void UserWindow::applyFilters()
+QList<Car> UserWindow::applyFilters()
 {
     QList<Car> cars = carmanager->getAllCars();
     int categoryIndex = ui->comboCategory->currentIndex();
@@ -231,72 +238,19 @@ void UserWindow::applyFilters()
             result.append(car);
         }
     }
-    loadCarsList(ui->carsListWidget, result, true);
+    return result;
 }
 
-
-void UserWindow::on_comboCategory_currentIndexChanged(int index)
+QList<Car> UserWindow::selectMinMaxMileage(const QList<Car>& cars) const
 {
-    applyFilters();
-
-}
-
-
-void UserWindow::on_spinMinSeats_valueChanged(int arg1)
-{
-    applyFilters();
-}
-
-
-void UserWindow::on_spinMaxPrice_valueChanged(double arg1)
-{
-    applyFilters();
-}
-
-
-void UserWindow::on_btnSortMerge_clicked()
-{
-    QList<Car> cars = carmanager->getAllCars();
-    QList<Car> result;
-
-    for(const Car& car : cars) {
-        if (car.getStatus() != Status::Available) {
-            continue;
-        }
-        result.append(car);
-    }
-
-    result = carmanager->mergeSort(result, this->isAscending);
-    loadCarsList(ui->carsListWidget, result);
-    if (this->isAscending == true) {
-        ui->btnSortMerge->setText("Сортувати ціною (за спаданням)");
-    }
-    else {
-        ui->btnSortMerge->setText("Сортувати ціною (за зростанням)");
-    }
-    this->isAscending = !(this->isAscending);
-}
-
-
-
-void UserWindow::on_btnMinMaxMileage_clicked()
-{
-    QList<Car> cars = carmanager->getAllCars();
     if (cars.isEmpty()) {
-        ui->carsListWidget->clear();
-        return;
+        return {};
     }
-    QList<Car> result;
-
 
     double minMileage = cars[0].getMileage();
     double maxMileage = cars[0].getMileage();
 
-    for(const Car& car : cars) {
-        if (car.getStatus() != Status::Available) {
-            continue;
-        }
-
+    for (const Car& car : cars) {
         if (car.getMileage() < minMileage) {
             minMileage = car.getMileage();
         }
@@ -305,28 +259,103 @@ void UserWindow::on_btnMinMaxMileage_clicked()
         }
     }
 
-    for(const Car& car : cars) {
-        if (car.getStatus() != Status::Available) {
-            continue;
-        }
+    QList<Car> result;
+    for (const Car& car : cars) {
         if (car.getMileage() == minMileage || car.getMileage() == maxMileage) {
             result.append(car);
         }
     }
-    loadCarsList(ui->carsListWidget, result);
-
-
+    return result;
 }
 
-void UserWindow::on_btnGroupAndSort_clicked() {
-    QList<Car> cars = carmanager->getAllCars();
-
+QList<Car> UserWindow::groupByClassYear(QList<Car> cars) const
+{
     std::sort(cars.begin(), cars.end(), [](const Car& a, const Car& b) {
         if (a.getCategory() != b.getCategory()) {
             return static_cast<int>(a.getCategory()) < static_cast<int>(b.getCategory());
         }
         return a.getManufacturerYear() > b.getManufacturerYear();
     });
+    return cars;
+}
 
-    loadCarsList(ui->carsListWidget, cars);
+void UserWindow::renderCatalog()
+{
+    // щоразу беремо авто з applyFilters і лишаємо лише доступні
+    QList<Car> available;
+    for (const Car& car : applyFilters()) {
+        if (car.getStatus() == Status::Available) {
+            available.append(car);
+        }
+    }
+
+    // далі — залежно від обраного режиму
+    QList<Car> result;
+    switch (mode) {
+    case CatalogMode::MinMaxMileage:
+        result = selectMinMaxMileage(available);
+        break;
+    case CatalogMode::GroupClassYear:
+        result = groupByClassYear(available);
+        break;
+    case CatalogMode::SortPrice:
+    default:
+        result = carmanager->mergeSort(available, currentAscending);
+        break;
+    }
+
+    loadCarsList(ui->carsListWidget, result, false);
+}
+
+
+void UserWindow::on_comboCategory_currentIndexChanged(int index)
+{
+    renderCatalog();
+}
+
+
+void UserWindow::on_spinMinSeats_valueChanged(int arg1)
+{
+    renderCatalog();
+}
+
+
+void UserWindow::on_spinMaxPrice_valueChanged(double arg1)
+{
+    renderCatalog();
+}
+
+
+void UserWindow::on_spinDays_valueChanged(int arg1)
+{
+    renderCatalog();
+}
+
+
+void UserWindow::on_btnSortMerge_clicked()
+{
+    mode = CatalogMode::SortPrice;
+    currentAscending = isAscending;
+    if (isAscending) {
+        ui->btnSortMerge->setText("Сортувати ціною (за спаданням)");
+    }
+    else {
+        ui->btnSortMerge->setText("Сортувати ціною (за зростанням)");
+    }
+    isAscending = !isAscending;
+    renderCatalog();
+}
+
+
+void UserWindow::on_btnMinMaxMileage_clicked()
+{
+    mode = CatalogMode::MinMaxMileage;
+    renderCatalog();
+}
+
+
+void UserWindow::on_btnGroupAndSort_clicked()
+{
+    mode = CatalogMode::GroupClassYear;
+    renderCatalog();
 }
