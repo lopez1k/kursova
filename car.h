@@ -31,7 +31,7 @@ private:
     Status status;
 
 public:
-    Car(const QString& _id = "C-1", const QString& _brand = "Meno", const QString& _model = "Regan", const Category& _category = Category::Econom, const int& _manufacturerYear = 2004, const int& _seats = 4, const double& _rentPrice = 751.0, const double& mileage = 196.42, const Status& _status = Status::NotAvailable);
+    Car(const QString& _id = "C-1", const QString& _brand = "Reno", const QString& _model = "Megan", const Category& _category = Category::Econom, const int& _manufacturerYear = 2004, const int& _seats = 4, const double& _rentPrice = 751.0, const double& mileage = 196.42, const Status& _status = Status::NotAvailable);
     
     // копіювання лишаємо як було (неявне) — потрібне для QList<Car>
     Car(const Car& other) = default;
@@ -52,15 +52,15 @@ public:
     double getMileage() const;
     Status getStatus() const;
     QString getStatusString() const;
-    void setId(const QString _id = "sdsd");
-    void setBrand(const QString _brand = "Meno");
-    void setModel(const QString _model = "Regan");
-    void setCategory(const Category _category = Category::Econom);
-    void setManufacturerYear(const int _manufacturerYear = 2004);
-    void setSeats(const int _seats = 4);
-    void setRentPrice(const double _rentPrice = 751.0);
-    void setMileage(const double _mileage = 196.42);
-    void setStatus(const Status _status = Status::NotAvailable);
+    void setId(const QString& _id);
+    void setBrand(const QString& _brand);
+    void setModel(const QString& _model);
+    void setCategory(const Category _category);
+    void setManufacturerYear(const int _manufacturerYear);
+    void setSeats(const int _seats);
+    void setRentPrice(const double _rentPrice);
+    void setMileage(const double _mileage);
+    void setStatus(const Status _status);
     static Category stringToCategory(const QString& str);
     static Status stringToStatus(const QString& str);
 

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1040</width>
+    <width>1060</width>
     <height>680</height>
    </rect>
   </property>
@@ -119,6 +119,20 @@ QTableWidget#myRentalsTable {
     background: #FFFFFF; border: 1px solid #DDE2E8; border-radius: 6px;
     gridline-color: #E6E9ED; selection-background-color: #EEF3FA; selection-color: #1F2933;
 }
+QPushButton#btnReturnCar {
+    background: #4A6FA5; border: 1px solid #4A6FA5; border-radius: 4px;
+    color: #FFFFFF; font-weight: 600; padding: 8px 18px; min-height: 20px; margin-top: 8px;
+}
+QPushButton#btnReturnCar:hover   { background: #3F5F8F; border-color: #3F5F8F; }
+QPushButton#btnReturnCar:pressed { background: #34507A; }
+QPushButton#btnReturnCar:disabled { background: #E1E5EA; border-color: #DDE2E8; color: #A9B0BA; }
+QPushButton#btnCancelRental {
+    background: #FFFFFF; border: 1px solid #E8C4C0; border-radius: 4px;
+    color: #B42318; font-weight: 600; padding: 8px 18px; min-height: 20px; margin-top: 8px;
+}
+QPushButton#btnCancelRental:hover   { background: #FDF1F0; border-color: #D9A39D; }
+QPushButton#btnCancelRental:pressed { background: #FBE7E5; }
+QPushButton#btnCancelRental:disabled { background: #E1E5EA; border-color: #DDE2E8; color: #A9B0BA; }
 QHeaderView::section {
     background: #F0F2F5; border: none; border-bottom: 1px solid #DDE2E8;
     padding: 8px 10px; font-weight: 600;
@@ -647,6 +661,49 @@ QLabel#lblProfileName, QLabel#lblProfileEmail { font-size: 11pt; }
             </property>
            </column>
           </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="myRentalsButtonsLayout">
+           <item>
+            <spacer name="myRentalsButtonsSpacer">
+             <property name="orientation">
+              <enum>Qt::Orientation::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>10</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btnCancelRental">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="text">
+              <string>Скасувати бронювання</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btnReturnCar">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="text">
+              <string>Повернути автомобіль</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </widget>

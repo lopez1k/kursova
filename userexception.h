@@ -13,6 +13,11 @@ public:
     explicit UserNotFoundException(const QString& email);
 };
 
+class UserNotFoundByIdException : public UserException {
+public:
+    explicit UserNotFoundByIdException(const QString& id);
+};
+
 
 class InvalidPasswordException : public UserException {
 public:

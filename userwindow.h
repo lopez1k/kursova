@@ -42,6 +42,13 @@ private slots:
 
     void renderCatalog();
 
+    void on_myRentalsTable_itemSelectionChanged();
+
+    void on_btnCancelRental_clicked();
+
+
+    void on_btnReturnCar_clicked();
+
 private:
     enum class CatalogMode {
         SortPrice,

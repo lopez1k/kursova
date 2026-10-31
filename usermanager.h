@@ -21,6 +21,7 @@ public:
     void saveToJson() const;
     void loadFromJson();
     void addUser(const User& _user);
+    void addUser(const QString& _name, const QString& _email, const QString& _password, Role _role);
     bool login(const QString& _email, const QString& _password);
     void logout();
 

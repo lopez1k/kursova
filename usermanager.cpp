@@ -1,4 +1,5 @@
 #include "usermanager.h"
+#include <QRegularExpression>
 
 UserManager::UserManager(QString _filename) : filename(_filename) {
     loadFromJson();
@@ -77,6 +78,32 @@ void UserManager::loadFromJson() {
 
 void UserManager::addUser(const User& _user) {
     users.append(_user);
+    saveToJson();
+}
+
+void UserManager::addUser(const QString& _name, const QString& _email, const QString& _password, Role _role) {
+    if (_name.trimmed().isEmpty()) {
+        throw InvalidNameException();
+    }
+
+    static const QRegularExpression emailRegex("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
+    if (!emailRegex.match(_email.trimmed()).hasMatch()) {
+        throw InvalidEmailException();
+    }
+
+    if (_password.length() < 8) {
+        throw PasswordTooShortException();
+    }
+
+    const QString cleanEmail = _email.trimmed().toLower();
+    for (const User& u : users) {
+        if (u.getEmail().trimmed().toLower() == cleanEmail) {
+            throw EmailAlreadyExistsException(_email);
+        }
+    }
+
+    users.append(User(generateId(), _name.trimmed(), cleanEmail, _password, _role));
+    saveToJson();
 }
 
 bool UserManager::login(const QString& _email, const QString& _password) {
@@ -117,7 +144,7 @@ User* UserManager::findUserById(const QString& id) {
         }
     }
 
-    throw UserNotFoundException(id);
+    throw UserNotFoundByIdException(id);
 }
 
 

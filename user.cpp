@@ -1,9 +1,10 @@
 #include "user.h"
+#include <QRegularExpression>
 
 
 User::User(const QString& _id, const QString& _name, const QString& _email, const QString& _password, Role _role) : id(_id), name(_name), email(_email), password(PasswordHasher::hashPassword(_password)), role(_role) {}
 
-Role User::roleToCategory(const QString& str) {
+Role User::stringToRole(const QString& str) {
     if (str == "Адміністратор") {
         return Role::Administrator;
     }
@@ -57,6 +58,14 @@ void User::setName(const QString& _name) {
     throw InvalidNameException();
 }
 
+void User::setEmail(const QString& _email) {
+    static const QRegularExpression emailRegex("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
+    if (!emailRegex.match(_email.trimmed()).hasMatch()) {
+        throw InvalidEmailException();
+    }
+    this->email = _email.trimmed().toLower();
+}
+
 void User::setPassword(const QString& _password) {
     if (_password.length() < 8) {
         throw PasswordTooShortException();
@@ -80,7 +89,7 @@ const QJsonObject& operator >> (const QJsonObject& json, User& user) {
     user.name = json["name"].toString();
     user.email = json["email"].toString();
     user.password = json["password"].toString();
-    user.role = User::roleToCategory(json["role"].toString());
+    user.role = User::stringToRole(json["role"].toString());
 
     return json;
 }

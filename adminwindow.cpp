@@ -2,6 +2,7 @@
 #include "QDebug"
 #include "ui_adminwindow.h"
 #include "addcarwindow.h"
+#include "adduserwindow.h"
 
 AdminWindow::AdminWindow(UserManager* usermanager, CarManager* carmanager, RentalManager* rentalmanager, QWidget* loginWindow, QWidget *parent)
     : QWidget(parent)
@@ -84,6 +85,10 @@ QWidget* AdminWindow::createCarCardWidget(const Car& car) const {
 
 
 void AdminWindow::loadCarsList(QListWidget* list, const QList<Car>& result, bool isAvailable) const {
+    // список перезавантажується — виділення скидається, тож і кнопки гасимо
+    ui->btnEditCar->setEnabled(false);
+    ui->btnDeleteCar->setEnabled(false);
+
     list->clear();
     list->setViewMode(QListView::IconMode);
     list->setResizeMode(QListView::Adjust);
@@ -203,12 +208,6 @@ void AdminWindow::on_statusFilter_currentIndexChanged(int index)
 }
 
 
-void AdminWindow::on_carsListWidget_itemDoubleClicked(QListWidgetItem *item)
-{
-    return;
-}
-
-
 void AdminWindow::on_btnAddCar_clicked()
 {
     AddCarWindow* addcarui = new AddCarWindow(this->usermanager, this->carmanager, this->rentalmanager, this);
@@ -219,11 +218,33 @@ void AdminWindow::on_btnAddCar_clicked()
 }
 
 
+void AdminWindow::on_btnAddUser_clicked()
+{
+    AddUserWindow* adduserui = new AddUserWindow(this->usermanager, this);
+    adduserui->setAttribute(Qt::WA_DeleteOnClose);
+    adduserui->show();
+    connect(adduserui, &QObject::destroyed, this, &AdminWindow::loadUsersTable);
+}
+
+
 void AdminWindow::on_carsListWidget_itemClicked(QListWidgetItem *item)
 {
-    ui->btnEditCar->setEnabled(true);
-    ui->btnDeleteCar->setEnabled(true);
+    if (!item) {
+        ui->btnEditCar->setEnabled(false);
+        ui->btnDeleteCar->setEnabled(false);
+        return;
+    }
 
+    QString carId = item->data(Qt::UserRole).toString();
+    Car* car = carmanager->getCarById(carId);
+
+    // зайняте (орендоване) авто не можна ні редагувати, ні видаляти
+    const bool editable = car
+                          && car->getStatus() != Status::Taken
+                          && !rentalmanager->isCarRented(carId);
+
+    ui->btnEditCar->setEnabled(editable);
+    ui->btnDeleteCar->setEnabled(editable);
 }
 
 
@@ -234,6 +255,11 @@ void AdminWindow::on_btnEditCar_clicked()
         return;
     }
     QString carId = item->data(Qt::UserRole).toString();
+    Car* car = carmanager->getCarById(carId);
+    if (!car || car->getStatus() == Status::Taken || rentalmanager->isCarRented(carId)) {
+        QMessageBox::information(this, "Недоступно", "Орендоване авто не можна редагувати.");
+        return;
+    }
     AddCarWindow* addcarui = new AddCarWindow(this->usermanager, this->carmanager, this->rentalmanager, this, carId);
     addcarui->setAttribute(Qt::WA_DeleteOnClose);
     addcarui->show();
@@ -255,6 +281,10 @@ void AdminWindow::on_btnDeleteCar_clicked()
     if (!car) {
         return;
     }
+    if (car->getStatus() == Status::Taken || rentalmanager->isCarRented(carId)) {
+        QMessageBox::information(this, "Недоступно", "Орендоване авто не можна видалити.");
+        return;
+    }
     QString carName = car->getBrand() + " " + car->getModel();
 
     QMessageBox::StandardButton reply;
@@ -262,7 +292,8 @@ void AdminWindow::on_btnDeleteCar_clicked()
     car = carmanager->getCarById(carId);
     if (reply == QMessageBox::Yes && car) {
         car->setStatus(Status::Archived);
-        loadCarsList(ui->carsListWidget, carmanager->getAllCars());
+        carmanager->saveToJson();
+        loadCarsList(ui->carsListWidget, carmanager->getAllCars(), false);
     }
     ui->btnEditCar->setEnabled(false);
     ui->btnDeleteCar->setEnabled(false);

@@ -1,4 +1,5 @@
 #include "car.h"
+#include "carexception.h"
 
 
 Car::Car(const QString& _id, const QString& _brand, const QString& _model, const Category& _category, const int& _manufacturerYear, const int& _seats, const double& _rentPrice, const double& _mileage, const Status& _status) : id(_id), brand(_brand), model(_model), category(_category), manufacturerYear(_manufacturerYear), seats(_seats), rentPrice(_rentPrice), mileage(_mileage), status(_status) {}
@@ -118,15 +119,21 @@ QString Car::getStatusString() const {
     }
 }
 
-void Car::setId(const QString _id) {
+void Car::setId(const QString& _id) {
     this->id = _id;
 }
 
-void Car::setBrand(const QString _brand) {
+void Car::setBrand(const QString& _brand) {
+    if (_brand.trimmed().isEmpty()) {
+        throw InvalidCarDataException("Марка авто не може бути порожньою.");
+    }
     this->brand = _brand;
 }
 
-void Car::setModel(const QString _model) {
+void Car::setModel(const QString& _model) {
+    if (_model.trimmed().isEmpty()) {
+        throw InvalidCarDataException("Модель авто не може бути порожньою.");
+    }
     this->model = _model;
 }
 
@@ -135,18 +142,30 @@ void Car::setCategory(const Category _category) {
 }
 
 void Car::setManufacturerYear(const int _manufacturerYear) {
+    if (_manufacturerYear < 1900 || _manufacturerYear > 2100) {
+        throw InvalidCarDataException("Рік випуску має бути в межах 1900–2100.");
+    }
     this->manufacturerYear = _manufacturerYear;
 }
 
 void Car::setSeats(const int _seats) {
+    if (_seats <= 0) {
+        throw InvalidCarDataException("Кількість місць має бути більшою за 0.");
+    }
     this->seats = _seats;
 }
 
 void Car::setRentPrice(const double _rentPrice) {
+    if (_rentPrice < 0) {
+        throw InvalidCarDataException("Вартість оренди не може бути від'ємною.");
+    }
     this->rentPrice = _rentPrice;
 }
 
 void Car::setMileage(const double _mileage) {
+    if (_mileage < 0) {
+        throw InvalidCarDataException("Пробіг не може бути від'ємним.");
+    }
     this->mileage = _mileage;
 }
 

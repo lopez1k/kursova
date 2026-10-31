@@ -211,11 +211,6 @@ QPushButton#btnAdd:pressed { background: #34507A; }
        </item>
        <item>
         <property name="text">
-         <string>Зайнято</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
          <string>Недоступно</string>
         </property>
        </item>
