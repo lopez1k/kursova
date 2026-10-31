@@ -47,25 +47,33 @@ void AddCarWindow::on_btnAdd_clicked()
     double mileage = ui->numMileage->value();
     double rentPrice = ui->numPrice->value();
 
-    if(carId.isEmpty()) {
-        carmanager->addCar(brand, model, category, manufacturerYear, seats, rentPrice, mileage, status);
-    }
-    else {
-        Car* car = carmanager->getCarById(carId);
-        if (!car) {
-            QMessageBox::warning(this, "Помилка", "Автомобіль не знайдено. Можливо, його вже видалено.");
-            this->close();
-            return;
+    try {
+        if(carId.isEmpty()) {
+            carmanager->addCar(brand, model, category, manufacturerYear, seats, rentPrice, mileage, status);
         }
-        car->setBrand(brand);
-        car->setModel(model);
-        car->setCategory(category);
-        car->setManufacturerYear(manufacturerYear);
-        car->setSeats(seats);
-        car->setRentPrice(rentPrice);
-        car->setMileage(mileage);
-        car->setStatus(status);
+        else {
+            Car* car = carmanager->getCarById(carId);
+            if (!car) {
+                QMessageBox::warning(this, "Помилка", "Автомобіль не знайдено. Можливо, його вже видалено.");
+                this->close();
+                return;
+            }
+            car->setBrand(brand);
+            car->setModel(model);
+            car->setCategory(category);
+            car->setManufacturerYear(manufacturerYear);
+            car->setSeats(seats);
+            car->setRentPrice(rentPrice);
+            car->setMileage(mileage);
+            car->setStatus(status);
+            carmanager->saveToJson();
+        }
     }
+    catch (const AppException& ex) {
+        QMessageBox::warning(this, "Некоректні дані", ex.what());
+        return;
+    }
+
     this->close();
 
 }

@@ -24,8 +24,8 @@ public:
     void loadFromJson();
 
     void rentCar(const QString& _userId, const QString& _carId, const QDateTime& _startDate, const QDateTime& _endDate);
-    bool completeRental(const QString& _id);
-    bool cancelRental(const QString& _id);
+    void completeRental(const QString& _id);
+    void cancelRental(const QString& _id);
 
     Rental* findById(const QString& _id);
     const QList<Rental>& getAll() const;

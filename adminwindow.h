@@ -30,7 +30,6 @@ private slots:
 
     void on_statusFilter_currentIndexChanged(int index);
 
-    void on_carsListWidget_itemDoubleClicked(QListWidgetItem *item);
 
     void on_btnAddCar_clicked();
 
@@ -39,6 +38,8 @@ private slots:
     void on_btnEditCar_clicked();
 
     void on_btnDeleteCar_clicked();
+
+    void on_btnAddUser_clicked();
 
 private:
     Ui::AdminWindow *ui;

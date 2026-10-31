@@ -86,12 +86,17 @@ void RentalManager::rentCar(const QString& _userId, const QString& _carId, const
 
     rentals.append(Rental(generateId(), _userId, _carId, _startDate, _endDate, car->getRentPrice()));
     car->setStatus(Status::Taken);
+
+    saveToJson();
+    carmanager.saveToJson();
 }
 
-bool RentalManager::completeRental(const QString& rentalId) {
+void RentalManager::completeRental(const QString& rentalId) {
     Rental* r = findById(rentalId);
-    if (r == nullptr || r->getStatus() != RentalStatus::Active)
-        return false;
+    if (r == nullptr)
+        throw RentalNotFoundException(rentalId);
+    if (r->getStatus() != RentalStatus::Active)
+        throw RentalNotActiveException(rentalId);
 
     r->complete();
 
@@ -99,13 +104,16 @@ bool RentalManager::completeRental(const QString& rentalId) {
     if (car != nullptr && car->getStatus() == Status::Taken)
         car->setStatus(Status::Available);
 
-    return true;
+    saveToJson();
+    carmanager.saveToJson();
 }
 
-bool RentalManager::cancelRental(const QString& rentalId) {
+void RentalManager::cancelRental(const QString& rentalId) {
     Rental* r = findById(rentalId);
-    if (r == nullptr || r->getStatus() != RentalStatus::Active)
-        return false;
+    if (r == nullptr)
+        throw RentalNotFoundException(rentalId);
+    if (r->getStatus() != RentalStatus::Active)
+        throw RentalNotActiveException(rentalId);
 
     r->cancel();
 
@@ -113,7 +121,8 @@ bool RentalManager::cancelRental(const QString& rentalId) {
     if (car != nullptr && car->getStatus() == Status::Taken)
         car->setStatus(Status::Available);
 
-    return true;
+    saveToJson();
+    carmanager.saveToJson();
 }
 
 Rental* RentalManager::findById(const QString& rentalId) {

@@ -23,4 +23,14 @@ public:
     InvalidRentalPeriodException();
 };
 
+class RentalNotFoundException : public RentalException {
+public:
+    explicit RentalNotFoundException(const QString& rentalId);
+};
+
+class RentalNotActiveException : public RentalException {
+public:
+    explicit RentalNotActiveException(const QString& rentalId);
+};
+
 #endif // RENTALEXCEPTION_H

@@ -359,3 +359,94 @@ void UserWindow::on_btnGroupAndSort_clicked()
     mode = CatalogMode::GroupClassYear;
     renderCatalog();
 }
+void UserWindow::on_myRentalsTable_itemSelectionChanged()
+{
+    ui->btnReturnCar->setEnabled(false);
+    ui->btnCancelRental->setEnabled(false);
+
+    int row = ui->myRentalsTable->currentRow();
+    if (row < 0) {
+        return;
+    }
+
+    QTableWidgetItem* idItem = ui->myRentalsTable->item(row, 0);
+    if (!idItem) {
+        return;
+    }
+    QString rentId = idItem->text();
+    Rental* rent = rentalmanager->findById(rentId);
+    if (!rent || rent->getStatus() != RentalStatus::Active) {
+        return;
+    }
+
+    const bool started = rent->getStartDate() <= QDateTime::currentDateTime();
+
+    // оренда вже почалась → її можна повернути; ще не почалась → можна скасувати
+    ui->btnReturnCar->setEnabled(started);
+    ui->btnCancelRental->setEnabled(!started);
+}
+
+
+void UserWindow::on_btnReturnCar_clicked()
+{
+    int row = ui->myRentalsTable->currentRow();
+    if (row < 0) {
+        return;
+    }
+    User* user = usermanager->getCurrentUser();
+    if (!user) {
+        return;
+    }
+
+    QTableWidgetItem* idItem = ui->myRentalsTable->item(row, 0);
+    if (!idItem) {
+        return;
+    }
+    QString rentId = idItem->text();
+    try {
+        rentalmanager->completeRental(rentId);
+
+        rentalmanager->loadRentalsTable(ui->myRentalsTable, user->getId());
+        loadCarsList(ui->carsListWidget, carmanager->getAllCars(), true);
+        ui->btnReturnCar->setEnabled(false);
+        ui->btnCancelRental->setEnabled(false);
+
+        QMessageBox::information(this, "Готово", "Автомобіль повернено.");
+    }
+    catch (const AppException& ex) {
+        QMessageBox::warning(this, "Не вдалося повернути автомобіль", ex.what());
+    }
+}
+
+
+void UserWindow::on_btnCancelRental_clicked()
+{
+    int row = ui->myRentalsTable->currentRow();
+    if (row < 0) {
+        return;
+    }
+    User* user = usermanager->getCurrentUser();
+    if (!user) {
+        return;
+    }
+
+    QTableWidgetItem* idItem = ui->myRentalsTable->item(row, 0);
+    if (!idItem) {
+        return;
+    }
+    QString rentId = idItem->text();
+    try {
+        rentalmanager->cancelRental(rentId);
+
+        rentalmanager->loadRentalsTable(ui->myRentalsTable, user->getId());
+        loadCarsList(ui->carsListWidget, carmanager->getAllCars(), true);
+        ui->btnReturnCar->setEnabled(false);
+        ui->btnCancelRental->setEnabled(false);
+
+        QMessageBox::information(this, "Готово", "Бронювання скасовано.");
+    }
+    catch (const AppException& ex) {
+        QMessageBox::warning(this, "Не вдалося скасувати бронювання", ex.what());
+    }
+}
+

@@ -79,6 +79,7 @@ void CarManager::loadFromJson() {
 
 void CarManager::addCar(const QString& _brand, const QString& _model, const Category& _category, const int& _manufacturerYear, const int& _seats, const double& _rentPrice, const double& _mileage, const Status& _status) {
     cars.append(Car(generateId(), _brand, _model, _category, _manufacturerYear, _seats, _rentPrice, _mileage, _status));
+    saveToJson();
 }
 
 const QList<Car>& CarManager::getAllCars() const {
