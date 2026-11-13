@@ -65,18 +65,24 @@ QString Rental::getStatusString() const {
 }
 
 void Rental::complete() {
-    if (this->getStatus() != RentalStatus::Active) {
+    if (status != RentalStatus::Active) {
         return;
     }
 
-    this->returnedDate = QDateTime::currentDateTime();
-    this->status = RentalStatus::Completed;
+    returnedDate = QDateTime::currentDateTime();
+    status = RentalStatus::Completed;
 
-    if (returnedDate > this->getEndDate()) {
+    if (returnedDate > endDate) {
+        int plannedDays = std::max(1, static_cast<int>(startDate.daysTo(endDate)));
         int overdueDays = std::max(1, static_cast<int>(endDate.daysTo(returnedDate)));
-        this->totalPrice += overdueDays * OVERDUE_MULTIPLIER * this->getPricePerDay();
+        totalPrice = plannedDays * pricePerDay
+                   + overdueDays * OVERDUE_MULTIPLIER * pricePerDay;
+    } else {
+        int actualDays = std::max(1, static_cast<int>(startDate.daysTo(returnedDate)));
+        totalPrice = actualDays * pricePerDay;
     }
 }
+
 
 void Rental::cancel() {
     if (status != RentalStatus::Active)
@@ -100,6 +106,11 @@ QJsonObject& operator << (QJsonObject& json, const Rental& rental) {
     json["status"] = rental.getStatusString();
 
     return json;
+}
+
+QTextStream& operator << (QTextStream& out, const Rental& rental) {
+    out << rental.id << ";" << rental.carId << ";" << rental.userId << ";" << rental.startDate.toString(Qt::ISODate) << ";" << rental.endDate.toString(Qt::ISODate) << ";" << rental.returnedDate.toString(Qt::ISODate) << ";" << rental.pricePerDay << ";" << rental.totalPrice << ";" << rental.getStatusString() << "\n";
+    return out;
 }
 
 const QJsonObject& operator >> (const QJsonObject& json, Rental& rental) {

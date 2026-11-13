@@ -1,4 +1,9 @@
 #include "rentalmanager.h"
+#include <QFile>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QRegularExpression>
+#include <QTableWidget>
 
 RentalManager::RentalManager(UserManager& _usermanager, CarManager& _carmanager, QString _filename): usermanager(_usermanager), carmanager(_carmanager), filename(_filename) {
     loadFromJson();
@@ -178,8 +183,8 @@ void RentalManager::loadRentalsTable(QTableWidget* table, const QString& _userId
     const bool onlyUser = !_userId.isEmpty();
 
     table->setRowCount(0);
-    table->setColumnCount(6);
-    table->setHorizontalHeaderLabels({"ID", "Авто", "Початок", "Кінець (план)", "Сума", "Статус"});
+    table->setColumnCount(7);
+    table->setHorizontalHeaderLabels({"ID", "Авто", "Початок", "Кінець (план)", "Повернено", "Сума", "Статус"});
 
     for (const Rental& r : rentals) {
         if (onlyUser && r.getUserId() != _userId)
@@ -194,7 +199,33 @@ void RentalManager::loadRentalsTable(QTableWidget* table, const QString& _userId
         table->setItem(row, 1, new QTableWidgetItem(carName));
         table->setItem(row, 2, new QTableWidgetItem(r.getStartDate().toString("dd.MM.yyyy HH:mm")));
         table->setItem(row, 3, new QTableWidgetItem(r.getEndDate().toString("dd.MM.yyyy HH:mm")));
-        table->setItem(row, 4, new QTableWidgetItem(QString::number(r.getTotalPrice(), 'f', 2)));
-        table->setItem(row, 5, new QTableWidgetItem(r.getStatusString()));
+        const QDateTime returned = r.getReturnedDate();
+        table->setItem(row, 4, new QTableWidgetItem(returned.isValid() ? returned.toString("dd.MM.yyyy HH:mm") : "—"));
+        table->setItem(row, 5, new QTableWidgetItem(QString::number(r.getTotalPrice(), 'f', 2)));
+        table->setItem(row, 6, new QTableWidgetItem(r.getStatusString()));
     }
+    table->resizeColumnsToContents();
+}
+
+void RentalManager::saveToFile(const QString& filePath) const{
+    QFile file(filePath);
+    if(!file.open(QIODevice::WriteOnly)) {
+        throw RentalException("Не вдалось відкрити файл для запису: " + filePath);
+    }
+    QTextStream out(&file);
+    out << "ID;Car ID;User ID;Дата початку оренди;Дата кінця оренди;Фактична дата повернення;Ціна оренди за день;Кінцева ціна оренди;Статус\n";
+
+    for(const Rental& rental : this->getAll()) {
+        out << rental;
+    }
+    
+    file.close();
+}
+
+bool RentalManager::hasActiveRentals(const QString& _userId) const {
+    for (const Rental& r : rentals) {
+        if (r.getUserId() == _userId && r.getStatus() == RentalStatus::Active)
+            return true;
+    }
+    return false;
 }

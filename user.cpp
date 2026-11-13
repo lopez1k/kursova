@@ -84,6 +84,11 @@ QJsonObject& operator << (QJsonObject& json, const User& user) {
     return json;
 }
 
+QTextStream& operator << (QTextStream& out, const User& user) {
+    out << user.id << ";" << user.name << ";" << user.email << ";" << user.getRoleString() << "\n";
+    return out;
+}
+
 const QJsonObject& operator >> (const QJsonObject& json, User& user) {
     user.id = json["id"].toString();
     user.name = json["name"].toString();

@@ -1,11 +1,7 @@
 #ifndef USERMANAGER_H
 #define USERMANAGER_H
 #include "user.h"
-#include "QList"
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QFile>
-#include <QMessageBox>
+#include <QList>
 
 class UserManager {
 private:
@@ -24,6 +20,8 @@ public:
     void addUser(const QString& _name, const QString& _email, const QString& _password, Role _role);
     bool login(const QString& _email, const QString& _password);
     void logout();
+    void removeUser(const QString& _id);
+    void changePassword(const QString& _oldPassword, const QString& _newPassword);
 
     User* getCurrentUser();
     User* findUserByEmail(const QString& email);
@@ -31,8 +29,7 @@ public:
 
     const QList<User>& getAllUsers() const;
 
-    void loadUsersFromFile(const QString& filePath);
-    void saveUsersToFile(const QString& filePath) const;
+    void saveToFile(const QString& filePath) const;
 };
 
 #endif // USERMANAGER_H

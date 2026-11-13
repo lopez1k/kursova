@@ -2,8 +2,7 @@
 #define USERWINDOW_H
 
 #include <QWidget>
-#include "usermanager.h"
-#include "carmanager.h"
+#include <QListWidget>
 #include "rentalmanager.h"
 
 namespace Ui {
@@ -23,6 +22,7 @@ private slots:
     void on_btnMyRentals_clicked();
     void on_btnProfile_clicked();
     void on_btnLogout_clicked();
+    void on_btnChangePassword_clicked();
 
     void on_carsListWidget_itemDoubleClicked(QListWidgetItem *item);
 
@@ -50,6 +50,7 @@ private slots:
     void on_btnReturnCar_clicked();
 
 private:
+    void updateProfileStats();
     enum class CatalogMode {
         SortPrice,
         MinMaxMileage,

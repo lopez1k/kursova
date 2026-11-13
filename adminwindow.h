@@ -2,10 +2,8 @@
 #define ADMINWINDOW_H
 
 #include <QWidget>
-#include "usermanager.h"
-#include "carmanager.h"
+#include <QListWidget>
 #include "rentalmanager.h"
-
 namespace Ui {
 class AdminWindow;
 }
@@ -24,6 +22,8 @@ private slots:
     void on_btnUsers_clicked();
     void on_btnRentals_clicked();
     void on_btnLogout_clicked();
+    void on_btnProfile_clicked();
+    void on_btnChangePassword_clicked();
 
 
     void on_categoryFilter_currentIndexChanged(int index);
@@ -40,8 +40,15 @@ private slots:
     void on_btnDeleteCar_clicked();
 
     void on_btnAddUser_clicked();
+    void on_btnDeleteUser_clicked();
+    void on_usersTable_itemSelectionChanged();
+
+    void on_actionExportUsers_triggered();
+    void on_actionExportCars_triggered();
+    void on_actionExportRentals_triggered();
 
 private:
+    void updateProfileStats();
     Ui::AdminWindow *ui;
     UserManager* usermanager;
     CarManager* carmanager;

@@ -2,8 +2,6 @@
 #define ADDCARWINDOW_H
 
 #include <QWidget>
-#include "usermanager.h"
-#include "carmanager.h"
 #include "rentalmanager.h"
 
 

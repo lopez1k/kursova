@@ -1,5 +1,8 @@
 #include "carmanager.h"
-
+#include <QFile>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QRegularExpression>
 
 
 
@@ -87,7 +90,6 @@ const QList<Car>& CarManager::getAllCars() const {
 }
 
 
-#include <QLabel>
 
 Car* CarManager::getCarById(const QString& _uid) {
     for (Car& c : cars) {
@@ -159,4 +161,20 @@ QList<Car> CarManager::merge(const QList<Car>& left, const QList<Car>& right, bo
     }
 
     return result;
+}
+
+void CarManager::saveToFile(const QString& filePath) const {
+    QFile file(filePath);
+    if (!file.open(QIODevice::WriteOnly)) {
+        throw CarException("Не вдалось відкрити файл для запису: " + filePath);
+    }
+    QTextStream out(&file);
+
+    out << "ID;Марка;Модель;Категорія;Рік випуску;Місць;Ціна оренди;Пробіг;Статус\n";
+    
+    for(const Car& car : this->getAllCars()){
+        out << car;
+    }
+
+    file.close();
 }

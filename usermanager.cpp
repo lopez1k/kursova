@@ -1,4 +1,7 @@
 #include "usermanager.h"
+#include <QFile>
+#include <QJsonArray>
+#include <QJsonDocument>
 #include <QRegularExpression>
 
 UserManager::UserManager(QString _filename) : filename(_filename) {
@@ -160,4 +163,46 @@ User* UserManager::getCurrentUser() {
 
 const QList<User>& UserManager::getAllUsers() const {
     return users;
+}
+
+void UserManager::saveToFile(const QString& filePath) const {
+    QFile file(filePath);
+    if (!file.open(QIODevice::WriteOnly)) {
+        throw UserException("Не вдалося відкрити файл для запису: " + filePath);
+    }
+    QTextStream out(&file);
+    out << "ID;Ім'я;Email;Роль\n";
+    for (const User& u : this->getAllUsers()) {
+        out << u;
+    }
+    file.close();
+}
+
+void UserManager::changePassword(const QString& _oldPassword, const QString& _newPassword) {
+    User* user = this->getCurrentUser();
+    if (!user) {
+        throw UserException("Немає авторизованого користувача.");
+    }
+    if (!PasswordHasher::verifyPassword(_oldPassword, user->getPassword())) {
+        throw InvalidPasswordException();
+    }
+    if (_oldPassword == _newPassword) {
+        throw UserException("Новий пароль має відрізнятися від поточного.");
+    }
+    user->setPassword(_newPassword);
+    this->saveToJson();
+}
+
+void UserManager::removeUser(const QString& _id) {
+    if (_id == this->currentUserId) {
+        throw UserException("Не можна видалити власний обліковий запис.");
+    }
+    for (int i = 0; i < users.size(); ++i) {
+        if (users[i].getId() == _id) {
+            users.removeAt(i);
+            this->saveToJson();
+            return;
+        }
+    }
+    throw UserNotFoundByIdException(_id);
 }

@@ -1,7 +1,8 @@
 #ifndef CAR_H
 #define CAR_H
-#include "QString"
+#include "carexception.h"
 #include <QJsonObject>
+#include <QTextStream>
 
 
 enum class Category {
@@ -33,7 +34,7 @@ private:
 public:
     Car(const QString& _id = "C-1", const QString& _brand = "Reno", const QString& _model = "Megan", const Category& _category = Category::Econom, const int& _manufacturerYear = 2004, const int& _seats = 4, const double& _rentPrice = 751.0, const double& mileage = 196.42, const Status& _status = Status::NotAvailable);
     
-    // копіювання лишаємо як було (неявне) — потрібне для QList<Car>
+    
     Car(const Car& other) = default;
     Car& operator=(const Car& other) = default;
 
@@ -66,6 +67,7 @@ public:
 
 
     friend QJsonObject& operator << (QJsonObject& json, const Car& car);
+    friend QTextStream& operator << (QTextStream& out, const Car& car);
     friend const QJsonObject& operator >> (const QJsonObject& json, Car& car);
 
 };

@@ -1,4 +1,5 @@
 #include "passwordhasher.h"
+#include <QCryptographicHash>
 
 QString PasswordHasher::hashPassword(const QString& password, const QString& salt) {
         QByteArray data = (password + salt).toUtf8();
