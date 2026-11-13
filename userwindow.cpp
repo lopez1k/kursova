@@ -1,7 +1,13 @@
-#include "ui_userwindow.h"
 #include "userwindow.h"
-#include "QMessageBox"
+#include "ui_userwindow.h"
 #include "rentdialog.h"
+#include <QMessageBox>
+#include <QLabel>
+#include <QFrame>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QLocale>
+#include <cmath>
 
 UserWindow::UserWindow(UserManager* usermanager, CarManager* carmanager, RentalManager* rentalmanager, QWidget* loginWindow, QWidget *parent)
     : QWidget(parent)
@@ -16,6 +22,7 @@ UserWindow::UserWindow(UserManager* usermanager, CarManager* carmanager, RentalM
         User* currentUser = usermanager->getCurrentUser();
         ui->lblProfileEmail->setText("Email: <b>" + currentUser->getEmail() + "</b>");
         ui->lblProfileName->setText("Ім'я: <b>" + currentUser->getName() + "</b>");
+        ui->lblProfileRole->setText("Роль: <b>" + currentUser->getRoleString() + "</b>");
         rentalmanager->loadRentalsTable(ui->myRentalsTable, currentUser->getId());
     }
     loadCarsList(ui->carsListWidget, carmanager->getAllCars(), true);
@@ -123,7 +130,7 @@ void UserWindow::loadCarsList(QListWidget* list, const QList<Car>& result, bool 
     list->setSpacing(4);
 
     const QSize cardSize(220, 156);
-    const QSize itemSize(cardSize.width() + 12, cardSize.height() + 12);   // + відступи контейнера
+    const QSize itemSize(cardSize.width() + 12, cardSize.height() + 12); 
 
     for (const Car& car : result) {
         if (isAvailable &&
@@ -160,6 +167,7 @@ void UserWindow::on_btnMyRentals_clicked() {
 }
 
 void UserWindow::on_btnProfile_clicked() {
+    updateProfileStats();
     ui->stackedWidget->setCurrentIndex(2);
 }
 
@@ -170,6 +178,7 @@ void UserWindow::on_btnLogout_clicked() {
 
     if (loginWindow)
     {
+        loginWindow->setWindowState(this->windowState());
         loginWindow->show();
     }
 
@@ -281,7 +290,6 @@ QList<Car> UserWindow::groupByClassYear(QList<Car> cars) const
 
 void UserWindow::renderCatalog()
 {
-    // щоразу беремо авто з applyFilters і лишаємо лише доступні
     QList<Car> available;
     for (const Car& car : applyFilters()) {
         if (car.getStatus() == Status::Available) {
@@ -289,7 +297,6 @@ void UserWindow::renderCatalog()
         }
     }
 
-    // далі — залежно від обраного режиму
     QList<Car> result;
     switch (mode) {
     case CatalogMode::MinMaxMileage:
@@ -381,7 +388,6 @@ void UserWindow::on_myRentalsTable_itemSelectionChanged()
 
     const bool started = rent->getStartDate() <= QDateTime::currentDateTime();
 
-    // оренда вже почалась → її можна повернути; ще не почалась → можна скасувати
     ui->btnReturnCar->setEnabled(started);
     ui->btnCancelRental->setEnabled(!started);
 }
@@ -450,3 +456,49 @@ void UserWindow::on_btnCancelRental_clicked()
     }
 }
 
+void UserWindow::on_btnChangePassword_clicked() {
+    const QString oldPassword = ui->editOldPassword->text();
+    const QString newPassword = ui->editNewPassword->text();
+    const QString confirmPassword = ui->editConfirmPassword->text();
+
+    if (oldPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
+        QMessageBox::warning(this, "Зміна пароля", "Заповніть усі поля.");
+        return;
+    }
+    if (newPassword != confirmPassword) {
+        QMessageBox::warning(this, "Зміна пароля", "Нові паролі не збігаються.");
+        return;
+    }
+
+    try {
+        usermanager->changePassword(oldPassword, newPassword);
+    } catch (const AppException& ex) {
+        QMessageBox::warning(this, "Зміна пароля", ex.what());
+        return;
+    }
+
+    ui->editOldPassword->clear();
+    ui->editNewPassword->clear();
+    ui->editConfirmPassword->clear();
+    QMessageBox::information(this, "Зміна пароля", "Пароль успішно змінено.");
+}
+
+void UserWindow::updateProfileStats() {
+    User* user = usermanager ? usermanager->getCurrentUser() : nullptr;
+    if (!user) return;
+
+    int active = 0, completed = 0;
+    double spent = 0.0;
+    const auto rentals = rentalmanager->getByUser(user->getId());
+    for (const Rental& r : rentals) {
+        if (r.getStatus() == RentalStatus::Active) ++active;
+        if (r.getStatus() == RentalStatus::Completed) ++completed;
+        spent += r.getTotalPrice();   
+    }
+
+    QLocale ua(QLocale::Ukrainian);
+    ui->statValue1->setText(QString::number(rentals.size()));
+    ui->statValue2->setText(QString::number(active));
+    ui->statValue3->setText(QString::number(completed));
+    ui->statValue4->setText(ua.toString(spent, 'f', 0));
+}

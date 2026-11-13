@@ -1,8 +1,17 @@
 #include "adminwindow.h"
-#include "QDebug"
 #include "ui_adminwindow.h"
 #include "addcarwindow.h"
 #include "adduserwindow.h"
+#include <QFileDialog>
+#include <QStandardPaths>
+#include <QDir>
+#include <QMessageBox>
+#include <QLabel>
+#include <QFrame>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QLocale>
+#include <cmath>
 
 AdminWindow::AdminWindow(UserManager* usermanager, CarManager* carmanager, RentalManager* rentalmanager, QWidget* loginWindow, QWidget *parent)
     : QWidget(parent)
@@ -16,6 +25,9 @@ AdminWindow::AdminWindow(UserManager* usermanager, CarManager* carmanager, Renta
     if (usermanager && usermanager->getCurrentUser()) {
         User* currentUser = usermanager->getCurrentUser();
         ui->welcomeLabel->setText("<b>Вітаємо</b>, " + currentUser->getName() + "!");
+        ui->lblProfileName->setText("Ім'я: <b>" + currentUser->getName() + "</b>");
+        ui->lblProfileEmail->setText("Email: <b>" + currentUser->getEmail() + "</b>");
+        ui->lblProfileRole->setText("Роль: <b>" + currentUser->getRoleString() + "</b>");
     }
     loadUsersTable();
     rentalmanager->loadRentalsTable(ui->rentalsTable);
@@ -85,7 +97,6 @@ QWidget* AdminWindow::createCarCardWidget(const Car& car) const {
 
 
 void AdminWindow::loadCarsList(QListWidget* list, const QList<Car>& result, bool isAvailable) const {
-    // список перезавантажується — виділення скидається, тож і кнопки гасимо
     ui->btnEditCar->setEnabled(false);
     ui->btnDeleteCar->setEnabled(false);
 
@@ -146,6 +157,7 @@ void AdminWindow::on_btnLogout_clicked()
         usermanager->logout();
     }
     if (this->loginWindow) {
+        this->loginWindow->setWindowState(this->windowState());
         this->loginWindow->show();
     }
     this->close();
@@ -238,7 +250,7 @@ void AdminWindow::on_carsListWidget_itemClicked(QListWidgetItem *item)
     QString carId = item->data(Qt::UserRole).toString();
     Car* car = carmanager->getCarById(carId);
 
-    // зайняте (орендоване) авто не можна ні редагувати, ні видаляти
+    
     const bool editable = car
                           && car->getStatus() != Status::Taken
                           && !rentalmanager->isCarRented(carId);
@@ -299,3 +311,144 @@ void AdminWindow::on_btnDeleteCar_clicked()
     ui->btnDeleteCar->setEnabled(false);
 }
 
+
+
+void AdminWindow::on_actionExportUsers_triggered() {
+    QString docs = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    QString path = QFileDialog::getSaveFileName(this, "Експорт користувачів", QDir(docs).filePath("users.csv"), "CSV (*.csv)");
+    if (path.isEmpty()) {
+        return;
+    }
+    try {
+        usermanager->saveToFile(path);
+        QMessageBox::information(this, "Експорт користувачів", "Користувачів успішно експортовано!");
+    } catch (const AppException& ex) {
+        QMessageBox::warning(this, "Помилка експорту", ex.what());
+    }
+}
+
+void AdminWindow::on_actionExportCars_triggered() {
+    QString docs = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    QString path = QFileDialog::getSaveFileName(this, "Експорт автомобілів", QDir(docs).filePath("cars.csv"), "CSV (*.csv)");
+    if (path.isEmpty()) {
+        return;
+    }
+    try{ 
+        carmanager->saveToFile(path);
+        QMessageBox::information(this, "Експорт автомобілів", "Автомобілі успішно експортовано!");
+    } catch (const AppException& ex) {
+        QMessageBox::warning(this, "Помилка експорту", ex.what());   
+    }
+}
+
+void AdminWindow::on_actionExportRentals_triggered() {
+    QString docs = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    QString path = QFileDialog::getSaveFileName(this, "Експорт історії оренди", QDir(docs).filePath("history.csv"), "CSV (*.csv)");
+    if (path.isEmpty()) {
+        return;
+    }
+    try {
+        rentalmanager->saveToFile(path);
+        QMessageBox::information(this, "Експорт історії оренди", "Історію оренди успішно експортовано!");
+    } catch (const AppException& ex) {
+        QMessageBox::warning(this, "Помилка експорту", ex.what());   
+    }
+}
+
+void AdminWindow::on_btnProfile_clicked()
+{
+    updateProfileStats();
+    ui->stackedWidget->setCurrentIndex(3);
+}
+
+void AdminWindow::on_btnChangePassword_clicked() {
+    const QString oldPassword = ui->editOldPassword->text();
+    const QString newPassword = ui->editNewPassword->text();
+    const QString confirmPassword = ui->editConfirmPassword->text();
+
+    if (oldPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
+        QMessageBox::warning(this, "Зміна пароля", "Заповніть усі поля.");
+        return;
+    }
+    if (newPassword != confirmPassword) {
+        QMessageBox::warning(this, "Зміна пароля", "Нові паролі не збігаються.");
+        return;
+    }
+
+    try {
+        usermanager->changePassword(oldPassword, newPassword);
+    } catch (const AppException& ex) {
+        QMessageBox::warning(this, "Зміна пароля", ex.what());
+        return;
+    }
+
+    ui->editOldPassword->clear();
+    ui->editNewPassword->clear();
+    ui->editConfirmPassword->clear();
+    QMessageBox::information(this, "Зміна пароля", "Пароль успішно змінено.");
+}
+
+void AdminWindow::updateProfileStats() {
+    int carsInFleet = 0;
+    for (const Car& car : carmanager->getAllCars()) {
+        if (car.getStatus() != Status::Archived) ++carsInFleet;
+    }
+
+    double revenue = 0.0;
+    for (const Rental& r : rentalmanager->getAll()) {
+        revenue += r.getTotalPrice();   
+    }
+
+    QLocale ua(QLocale::Ukrainian);
+    ui->statValue1->setText(QString::number(carsInFleet));
+    ui->statValue2->setText(QString::number(usermanager->getAllUsers().size()));
+    ui->statValue3->setText(QString::number(rentalmanager->getActive().size()));
+    ui->statValue4->setText(ua.toString(revenue, 'f', 0));
+}
+
+void AdminWindow::on_usersTable_itemSelectionChanged()
+{
+    const int row = ui->usersTable->currentRow();
+    QTableWidgetItem* idItem = row >= 0 ? ui->usersTable->item(row, 0) : nullptr;
+    User* current = usermanager->getCurrentUser();
+
+  
+    const bool canDelete = idItem
+                           && ui->usersTable->selectionModel()->hasSelection()
+                           && (!current || idItem->text() != current->getId());
+    ui->btnDeleteUser->setEnabled(canDelete);
+}
+
+void AdminWindow::on_btnDeleteUser_clicked()
+{
+    const int row = ui->usersTable->currentRow();
+    QTableWidgetItem* idItem = row >= 0 ? ui->usersTable->item(row, 0) : nullptr;
+    if (!idItem) {
+        return;
+    }
+    const QString userId = idItem->text();
+    const QString userName = ui->usersTable->item(row, 1) ? ui->usersTable->item(row, 1)->text() : userId;
+
+    if (rentalmanager->hasActiveRentals(userId)) {
+        QMessageBox::information(this, "Недоступно",
+                                 "У користувача є активні оренди. Спочатку завершіть або скасуйте їх.");
+        return;
+    }
+
+    auto reply = QMessageBox::question(this, "Видалення " + userName,
+                                       "Ви справді хочете видалити цього користувача?",
+                                       QMessageBox::Yes | QMessageBox::No);
+    if (reply != QMessageBox::Yes) {
+        return;
+    }
+
+    try {
+        usermanager->removeUser(userId);
+    } catch (const AppException& ex) {
+        QMessageBox::warning(this, "Помилка видалення", ex.what());
+        return;
+    }
+
+    ui->usersTable->clearSelection();
+    loadUsersTable();
+}

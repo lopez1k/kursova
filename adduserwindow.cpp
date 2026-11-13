@@ -1,6 +1,5 @@
 #include "adduserwindow.h"
 #include "ui_adduserwindow.h"
-#include "appexception.h"
 #include <QMessageBox>
 
 AddUserWindow::AddUserWindow(UserManager* usermanager, QWidget* adminWindow, QWidget *parent)

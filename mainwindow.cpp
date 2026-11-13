@@ -1,8 +1,8 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
-#include "QMessageBox"
 #include "adminwindow.h"
 #include "userwindow.h"
+#include <QMessageBox>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -34,12 +34,14 @@ void MainWindow::on_pushButton_clicked()
             if (usermanager->getCurrentUser()->isAdmin()) {
                 AdminWindow* adminui = new AdminWindow(this->usermanager, this->carmanager, this->rentalmanager, this);
                 adminui->setAttribute(Qt::WA_DeleteOnClose);
+                adminui->setWindowState(this->windowState());   
                 adminui->show();
                 this->hide();
             }
             else {
                 UserWindow*  userui  = new UserWindow(this->usermanager, this->carmanager, this->rentalmanager, this);
                 userui->setAttribute(Qt::WA_DeleteOnClose);
+                userui->setWindowState(this->windowState());   
                 userui->show();
                 this->hide();
             }

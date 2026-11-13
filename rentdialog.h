@@ -3,12 +3,9 @@
 
 #include <QDialog>
 #include <QDateEdit>
-#include <QLabel>
-#include <QPushButton>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QDate>
 #include "car.h"
+
+class QLabel;
 
 class RentDialog : public QDialog {
     Q_OBJECT

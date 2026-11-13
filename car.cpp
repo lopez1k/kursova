@@ -1,5 +1,4 @@
 #include "car.h"
-#include "carexception.h"
 
 
 Car::Car(const QString& _id, const QString& _brand, const QString& _model, const Category& _category, const int& _manufacturerYear, const int& _seats, const double& _rentPrice, const double& _mileage, const Status& _status) : id(_id), brand(_brand), model(_model), category(_category), manufacturerYear(_manufacturerYear), seats(_seats), rentPrice(_rentPrice), mileage(_mileage), status(_status) {}
@@ -186,6 +185,11 @@ QJsonObject& operator << (QJsonObject& json, const Car& car) {
     json["status"] = car.getStatusString();
 
     return json;
+}
+
+QTextStream& operator << (QTextStream& out, const Car& car) {
+    out << car.id << ";" << car.brand << ";" << car.model << ";" << car.getCategoryString() << ";" << car.manufacturerYear << ";" << car.seats << ";" << car.rentPrice << ";" << car.mileage << ";" << car.getStatusString() << "\n";
+    return out;
 }
 
 const QJsonObject& operator >> (const QJsonObject& json, Car& car) {

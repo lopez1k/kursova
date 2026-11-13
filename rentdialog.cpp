@@ -1,4 +1,8 @@
 #include "rentdialog.h"
+#include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 
 RentDialog::RentDialog(const Car& car, QWidget *parent)
     : QDialog(parent), m_pricePerDay(car.getRentPrice())

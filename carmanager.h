@@ -2,12 +2,6 @@
 #define CARMANAGER_H
 #include "car.h"
 #include <QList>
-#include <QTableWidget>
-#include <QListWidget>
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QFile>
-#include <QMessageBox>
 
 class CarManager
 {
@@ -27,6 +21,8 @@ public:
     const QList<Car>& getAllCars() const;
     Car* getCarById(const QString& _uid);
     QList<Car> mergeSort(const QList<Car>& list, bool isAscending = true);
+    
+    void saveToFile(const QString& filePath) const;
 
 };
 

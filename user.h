@@ -1,11 +1,9 @@
 #ifndef USER_H
 #define USER_H
-#include "QString"
-#include "QTextStream"
-#include <iostream>
 #include "userexception.h"
 #include "passwordhasher.h"
 #include <QJsonObject>
+#include <QTextStream>
 
 enum class Role {
     Customer,
@@ -37,6 +35,7 @@ public:
     static Role stringToRole(const QString& str);
 
     friend QJsonObject& operator << (QJsonObject& json, const User& user);
+    friend QTextStream& operator << (QTextStream& out, const User& user);
     friend const QJsonObject& operator >> (const QJsonObject& json, User& user);
 
 };

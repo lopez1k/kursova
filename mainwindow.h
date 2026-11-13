@@ -2,8 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "usermanager.h"
-#include "carmanager.h"
 #include "rentalmanager.h"
 
 QT_BEGIN_NAMESPACE

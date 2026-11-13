@@ -1,11 +1,12 @@
 #ifndef RENTALMANAGER_H
 #define RENTALMANAGER_H
 
-#include "QList"
 #include "rental.h"
 #include "rentalexception.h"
 #include "carmanager.h"
 #include "usermanager.h"
+
+class QTableWidget;
 
 class RentalManager
 {
@@ -33,8 +34,10 @@ public:
     QList<Rental> getByCar(const QString& carId) const;
     QList<Rental> getActive() const;
     void loadRentalsTable(QTableWidget* ui, const QString& _userId = "") const;
-
     bool isCarRented(const QString& _carId) const;
+    bool hasActiveRentals(const QString& _userId) const;
+
+    void saveToFile(const QString& filePath) const;
 };
 
 #endif // RENTALMANAGER_H

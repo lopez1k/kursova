@@ -1,5 +1,6 @@
 #include "addcarwindow.h"
 #include "ui_addcarwindow.h"
+#include <QMessageBox>
 
 AddCarWindow::AddCarWindow(UserManager* usermanager, CarManager* carmanager, RentalManager* rentalmanager, QWidget* adminWindow, const QString& carId, QWidget *parent)
     : QWidget(parent)

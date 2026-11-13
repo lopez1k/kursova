@@ -4,6 +4,7 @@
 #include <QString>
 #include <QDateTime>
 #include <QJsonObject>
+#include <QTextStream>
 
 enum class RentalStatus {
     Active,
@@ -46,6 +47,7 @@ public:
     static RentalStatus stringToStatus(const QString& str);
 
     friend QJsonObject& operator << (QJsonObject& json, const Rental& rental);
+    friend QTextStream& operator << (QTextStream& out, const Rental& rental);
     friend const QJsonObject& operator >> (const QJsonObject& json, Rental& rental);
 
 };
