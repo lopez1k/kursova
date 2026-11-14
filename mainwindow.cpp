@@ -2,6 +2,7 @@
 #include "./ui_mainwindow.h"
 #include "adminwindow.h"
 #include "userwindow.h"
+#include "registerdialog.h"
 #include <QMessageBox>
 
 
@@ -60,5 +61,13 @@ void MainWindow::on_pushButton_clicked()
     catch (const UserException& ex) {
         QMessageBox::critical(this, "Помилка", ex.what());
     }
+}
+
+
+void MainWindow::on_btnRegister_clicked()
+{
+    RegisterDialog* registerdialogui = new RegisterDialog(this->usermanager, this);
+    registerdialogui->setAttribute(Qt::WA_DeleteOnClose);
+    registerdialogui->show();
 }
 
