@@ -23,6 +23,8 @@ AddCarWindow::AddCarWindow(UserManager* usermanager, CarManager* carmanager, Ren
         ui->numSeats->setValue(car->getSeats());
         ui->numMileage->setValue(car->getMileage());
         ui->numPrice->setValue(car->getRentPrice());
+        ui->lblHeader->setText("Редагування автомобіля");
+        setWindowTitle("Редагування: " + car->getBrand() + " " + car->getModel());
     }
 }
 

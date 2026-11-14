@@ -1,7 +1,14 @@
 #include "car.h"
 
 
-Car::Car(const QString& _id, const QString& _brand, const QString& _model, const Category& _category, const int& _manufacturerYear, const int& _seats, const double& _rentPrice, const double& _mileage, const Status& _status) : id(_id), brand(_brand), model(_model), category(_category), manufacturerYear(_manufacturerYear), seats(_seats), rentPrice(_rentPrice), mileage(_mileage), status(_status) {}
+Car::Car(const QString& _id, const QString& _brand, const QString& _model, const Category& _category, const int& _manufacturerYear, const int& _seats, const double& _rentPrice, const double& _mileage, const Status& _status) : id(_id), category(_category), status(_status) {
+    setBrand(_brand);
+    setModel(_model);
+    setManufacturerYear(_manufacturerYear);
+    setSeats(_seats);
+    setRentPrice(_rentPrice);
+    setMileage(_mileage);
+}
 
 
 Car::Car(Car&& other) noexcept
