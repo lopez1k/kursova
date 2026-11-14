@@ -25,7 +25,6 @@ UserWindow::UserWindow(UserManager* usermanager, CarManager* carmanager, RentalM
         ui->lblProfileRole->setText("Роль: <b>" + currentUser->getRoleString() + "</b>");
         rentalmanager->loadRentalsTable(ui->myRentalsTable, currentUser->getId());
     }
-    loadCarsList(ui->carsListWidget, carmanager->getAllCars(), true);
     QList<Car> cars = carmanager->getAllCars();
     double maxRentPrice = 0.0;
     for(const Car& car : cars) {
@@ -38,6 +37,9 @@ UserWindow::UserWindow(UserManager* usermanager, CarManager* carmanager, RentalM
     }
     ui->spinMaxPrice->setMaximum(maxRentPrice);
     ui->spinMaxPrice->setValue(maxRentPrice);
+
+    updateViewButtons();
+    renderCatalog();
 }
 
 UserWindow::~UserWindow()
@@ -220,7 +222,7 @@ void UserWindow::on_carsListWidget_itemDoubleClicked(QListWidgetItem *item) {
                                          .arg(startDate.daysTo(endDate))
                                          .arg(totalPrice, 0, 'f', 2));
 
-            loadCarsList(ui->carsListWidget, carmanager->getAllCars(), true);
+            renderCatalog();
             rentalmanager->loadRentalsTable(ui->myRentalsTable, userId);
         }
         catch (const AppException& ex) {
@@ -250,44 +252,6 @@ QList<Car> UserWindow::applyFilters()
     return result;
 }
 
-QList<Car> UserWindow::selectMinMaxMileage(const QList<Car>& cars) const
-{
-    if (cars.isEmpty()) {
-        return {};
-    }
-
-    double minMileage = cars[0].getMileage();
-    double maxMileage = cars[0].getMileage();
-
-    for (const Car& car : cars) {
-        if (car.getMileage() < minMileage) {
-            minMileage = car.getMileage();
-        }
-        if (car.getMileage() > maxMileage) {
-            maxMileage = car.getMileage();
-        }
-    }
-
-    QList<Car> result;
-    for (const Car& car : cars) {
-        if (car.getMileage() == minMileage || car.getMileage() == maxMileage) {
-            result.append(car);
-        }
-    }
-    return result;
-}
-
-QList<Car> UserWindow::groupByClassYear(QList<Car> cars) const
-{
-    std::sort(cars.begin(), cars.end(), [](const Car& a, const Car& b) {
-        if (a.getCategory() != b.getCategory()) {
-            return static_cast<int>(a.getCategory()) < static_cast<int>(b.getCategory());
-        }
-        return a.getManufacturerYear() > b.getManufacturerYear();
-    });
-    return cars;
-}
-
 void UserWindow::renderCatalog()
 {
     QList<Car> available;
@@ -297,21 +261,21 @@ void UserWindow::renderCatalog()
         }
     }
 
-    QList<Car> result;
     switch (mode) {
+    case CatalogMode::SortPrice:
+        available = carmanager->mergeSort(available, sortAscending);
+        break;
     case CatalogMode::MinMaxMileage:
-        result = selectMinMaxMileage(available);
+        available = carmanager->selectMinMaxMileage(available);
         break;
     case CatalogMode::GroupClassYear:
-        result = groupByClassYear(available);
+        available = carmanager->groupByClassYear(available);
         break;
-    case CatalogMode::SortPrice:
-    default:
-        result = carmanager->mergeSort(available, currentAscending);
+    case CatalogMode::None:
         break;
     }
 
-    loadCarsList(ui->carsListWidget, result, false);
+    loadCarsList(ui->carsListWidget, available, false);
 }
 
 
@@ -339,31 +303,54 @@ void UserWindow::on_spinDays_valueChanged(int arg1)
 }
 
 
-void UserWindow::on_btnSortMerge_clicked()
+void UserWindow::updateViewButtons()
 {
-    mode = CatalogMode::SortPrice;
-    currentAscending = isAscending;
-    if (isAscending) {
-        ui->btnSortMerge->setText("Сортувати ціною (за спаданням)");
+    ui->btnSortMerge->setChecked(mode == CatalogMode::SortPrice);
+    ui->btnMinMaxMileage->setChecked(mode == CatalogMode::MinMaxMileage);
+    ui->btnGroupAndSort->setChecked(mode == CatalogMode::GroupClassYear);
+
+    if (mode == CatalogMode::SortPrice) {
+        ui->btnSortMerge->setText(sortAscending ? "Ціна: за зростанням ↑" : "Ціна: за спаданням ↓");
+    } else {
+        ui->btnSortMerge->setText("Сортувати за ціною");
     }
-    else {
-        ui->btnSortMerge->setText("Сортувати ціною (за зростанням)");
-    }
-    isAscending = !isAscending;
-    renderCatalog();
+
+    ui->btnResetView->setEnabled(mode != CatalogMode::None);
 }
 
+void UserWindow::on_btnSortMerge_clicked()
+{
+    // повторне натискання змінює напрямок сортування
+    if (mode == CatalogMode::SortPrice) {
+        sortAscending = !sortAscending;
+    } else {
+        mode = CatalogMode::SortPrice;
+        sortAscending = true;
+    }
+    updateViewButtons();
+    renderCatalog();
+}
 
 void UserWindow::on_btnMinMaxMileage_clicked()
 {
-    mode = CatalogMode::MinMaxMileage;
+    // повторне натискання вимикає режим
+    mode = (mode == CatalogMode::MinMaxMileage) ? CatalogMode::None : CatalogMode::MinMaxMileage;
+    updateViewButtons();
     renderCatalog();
 }
 
-
 void UserWindow::on_btnGroupAndSort_clicked()
 {
-    mode = CatalogMode::GroupClassYear;
+    mode = (mode == CatalogMode::GroupClassYear) ? CatalogMode::None : CatalogMode::GroupClassYear;
+    updateViewButtons();
+    renderCatalog();
+}
+
+void UserWindow::on_btnResetView_clicked()
+{
+    mode = CatalogMode::None;
+    sortAscending = true;
+    updateViewButtons();
     renderCatalog();
 }
 void UserWindow::on_myRentalsTable_itemSelectionChanged()
@@ -413,7 +400,7 @@ void UserWindow::on_btnReturnCar_clicked()
         rentalmanager->completeRental(rentId);
 
         rentalmanager->loadRentalsTable(ui->myRentalsTable, user->getId());
-        loadCarsList(ui->carsListWidget, carmanager->getAllCars(), true);
+        renderCatalog();
         ui->btnReturnCar->setEnabled(false);
         ui->btnCancelRental->setEnabled(false);
 
@@ -445,7 +432,7 @@ void UserWindow::on_btnCancelRental_clicked()
         rentalmanager->cancelRental(rentId);
 
         rentalmanager->loadRentalsTable(ui->myRentalsTable, user->getId());
-        loadCarsList(ui->carsListWidget, carmanager->getAllCars(), true);
+        renderCatalog();
         ui->btnReturnCar->setEnabled(false);
         ui->btnCancelRental->setEnabled(false);
 

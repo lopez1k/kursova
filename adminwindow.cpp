@@ -31,7 +31,8 @@ AdminWindow::AdminWindow(UserManager* usermanager, CarManager* carmanager, Renta
     }
     loadUsersTable();
     rentalmanager->loadRentalsTable(ui->rentalsTable);
-    loadCarsList(ui->carsListWidget, carmanager->getAllCars(), false);
+    updateViewButtons();
+    applyFilters();
 }
 
 AdminWindow::~AdminWindow()
@@ -136,7 +137,7 @@ void AdminWindow::loadCarsList(QListWidget* list, const QList<Car>& result, bool
 
 void AdminWindow::on_btnCars_clicked()
 {
-    loadCarsList(ui->carsListWidget, carmanager->getAllCars(), false);
+    applyFilters();
     ui->stackedWidget->setCurrentIndex(0);
 }
 
@@ -191,6 +192,9 @@ void AdminWindow::applyFilters()
 
     QList<Car> result;
     for (const Car& car : cars) {
+        if (car.getStatus() == Status::Archived) {
+            continue;   // архівні не показуємо і не враховуємо в мін/макс
+        }
         if (categoryIndex != 0) {
             if (car.getCategoryString() != ui->categoryFilter->currentText()) {
                 continue;
@@ -203,6 +207,21 @@ void AdminWindow::applyFilters()
         }
         result.append(car);
     }
+
+    switch (mode) {
+    case CatalogMode::SortPrice:
+        result = carmanager->mergeSort(result, sortAscending);
+        break;
+    case CatalogMode::MinMaxMileage:
+        result = carmanager->selectMinMaxMileage(result);
+        break;
+    case CatalogMode::GroupClassYear:
+        result = carmanager->groupByClassYear(result);
+        break;
+    case CatalogMode::None:
+        break;
+    }
+
     loadCarsList(ui->carsListWidget, result, false);
 }
 
@@ -305,7 +324,7 @@ void AdminWindow::on_btnDeleteCar_clicked()
     if (reply == QMessageBox::Yes && car) {
         car->setStatus(Status::Archived);
         carmanager->saveToJson();
-        loadCarsList(ui->carsListWidget, carmanager->getAllCars(), false);
+        applyFilters();
     }
     ui->btnEditCar->setEnabled(false);
     ui->btnDeleteCar->setEnabled(false);
@@ -451,4 +470,55 @@ void AdminWindow::on_btnDeleteUser_clicked()
 
     ui->usersTable->clearSelection();
     loadUsersTable();
+}
+
+void AdminWindow::updateViewButtons()
+{
+    ui->btnSortMerge->setChecked(mode == CatalogMode::SortPrice);
+    ui->btnMinMaxMileage->setChecked(mode == CatalogMode::MinMaxMileage);
+    ui->btnGroupAndSort->setChecked(mode == CatalogMode::GroupClassYear);
+
+    if (mode == CatalogMode::SortPrice) {
+        ui->btnSortMerge->setText(sortAscending ? "Ціна: за зростанням ↑" : "Ціна: за спаданням ↓");
+    } else {
+        ui->btnSortMerge->setText("Сортувати за ціною");
+    }
+
+    ui->btnResetView->setEnabled(mode != CatalogMode::None);
+}
+
+void AdminWindow::on_btnSortMerge_clicked()
+{
+    // повторне натискання змінює напрямок сортування
+    if (mode == CatalogMode::SortPrice) {
+        sortAscending = !sortAscending;
+    } else {
+        mode = CatalogMode::SortPrice;
+        sortAscending = true;
+    }
+    updateViewButtons();
+    applyFilters();
+}
+
+void AdminWindow::on_btnMinMaxMileage_clicked()
+{
+    // повторне натискання вимикає режим
+    mode = (mode == CatalogMode::MinMaxMileage) ? CatalogMode::None : CatalogMode::MinMaxMileage;
+    updateViewButtons();
+    applyFilters();
+}
+
+void AdminWindow::on_btnGroupAndSort_clicked()
+{
+    mode = (mode == CatalogMode::GroupClassYear) ? CatalogMode::None : CatalogMode::GroupClassYear;
+    updateViewButtons();
+    applyFilters();
+}
+
+void AdminWindow::on_btnResetView_clicked()
+{
+    mode = CatalogMode::None;
+    sortAscending = true;
+    updateViewButtons();
+    applyFilters();
 }

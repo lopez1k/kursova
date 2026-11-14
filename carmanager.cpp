@@ -3,6 +3,7 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QRegularExpression>
+#include <algorithm>
 
 
 
@@ -177,4 +178,40 @@ void CarManager::saveToFile(const QString& filePath) const {
     }
 
     file.close();
+}
+
+QList<Car> CarManager::selectMinMaxMileage(const QList<Car>& list) const {
+    if (list.isEmpty()) {
+        return {};
+    }
+
+    double minMileage = list[0].getMileage();
+    double maxMileage = list[0].getMileage();
+
+    for (const Car& car : list) {
+        if (car.getMileage() < minMileage) {
+            minMileage = car.getMileage();
+        }
+        if (car.getMileage() > maxMileage) {
+            maxMileage = car.getMileage();
+        }
+    }
+
+    QList<Car> result;
+    for (const Car& car : list) {
+        if (car.getMileage() == minMileage || car.getMileage() == maxMileage) {
+            result.append(car);
+        }
+    }
+    return result;
+}
+
+QList<Car> CarManager::groupByClassYear(QList<Car> list) const {
+    std::sort(list.begin(), list.end(), [](const Car& a, const Car& b) {
+        if (a.getCategory() != b.getCategory()) {
+            return static_cast<int>(a.getCategory()) < static_cast<int>(b.getCategory());
+        }
+        return a.getManufacturerYear() > b.getManufacturerYear();
+    });
+    return list;
 }

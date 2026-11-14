@@ -97,6 +97,8 @@ QGroupBox#filterGroupBox QPushButton {
 QGroupBox#filterGroupBox QPushButton:hover   { background: #EAEEF3; border-color: #C9D0D9; }
 QGroupBox#filterGroupBox QPushButton:pressed { background: #DFE5EC; }
 QGroupBox#filterGroupBox QPushButton:checked { background: #4A6FA5; border-color: #4A6FA5; color: #FFFFFF; }
+QGroupBox#filterGroupBox QPushButton:disabled { color: #A9B0BA; }
+QLabel#lblView { color: #5B6573; }
 
 /* ---- Картки авто (createCarCardWidget) ---- */
 QListWidget#carsListWidget { background: transparent; border: none; outline: 0; }
@@ -525,17 +527,21 @@ QFrame#statsCard QLabel[kind="caption"] { color: #6B7480; background: transparen
                <number>8</number>
               </property>
               <item>
+               <widget class="QLabel" name="lblView">
+                <property name="text">
+                 <string>Відображення:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QPushButton" name="btnSortMerge">
                 <property name="cursor">
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="text">
-                 <string>Сортувати ціною (за зростанням)</string>
+                 <string>Сортувати за ціною</string>
                 </property>
                 <property name="checkable">
-                 <bool>false</bool>
-                </property>
-                <property name="autoExclusive">
                  <bool>true</bool>
                 </property>
                </widget>
@@ -551,9 +557,6 @@ QFrame#statsCard QLabel[kind="caption"] { color: #6B7480; background: transparen
                 <property name="checkable">
                  <bool>true</bool>
                 </property>
-                <property name="autoExclusive">
-                 <bool>true</bool>
-                </property>
                </widget>
               </item>
               <item>
@@ -567,8 +570,15 @@ QFrame#statsCard QLabel[kind="caption"] { color: #6B7480; background: transparen
                 <property name="checkable">
                  <bool>true</bool>
                 </property>
-                <property name="autoExclusive">
-                 <bool>true</bool>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnResetView">
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="text">
+                 <string>Скинути</string>
                 </property>
                </widget>
               </item>

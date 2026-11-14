@@ -3,6 +3,14 @@
 #include "car.h"
 #include <QList>
 
+// Режим відображення каталогу авто (спільний для вікна адміна й користувача)
+enum class CatalogMode {
+    None,            // без додаткової обробки
+    SortPrice,       // сортування злиттям за ціною
+    MinMaxMileage,   // лише авто з мінімальним і максимальним пробігом
+    GroupClassYear   // групування за класом, всередині — за роком (новіші вище)
+};
+
 class CarManager
 {
 private:
@@ -21,6 +29,8 @@ public:
     const QList<Car>& getAllCars() const;
     Car* getCarById(const QString& _uid);
     QList<Car> mergeSort(const QList<Car>& list, bool isAscending = true);
+    QList<Car> selectMinMaxMileage(const QList<Car>& list) const;
+    QList<Car> groupByClassYear(QList<Car> list) const;
     
     void saveToFile(const QString& filePath) const;
 

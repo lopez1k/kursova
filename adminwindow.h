@@ -40,6 +40,11 @@ private slots:
     void on_btnDeleteCar_clicked();
 
     void on_btnAddUser_clicked();
+
+    void on_btnSortMerge_clicked();
+    void on_btnMinMaxMileage_clicked();
+    void on_btnGroupAndSort_clicked();
+    void on_btnResetView_clicked();
     void on_btnDeleteUser_clicked();
     void on_usersTable_itemSelectionChanged();
 
@@ -57,6 +62,9 @@ private:
     QWidget* loginWindow;
     QWidget* createCarCardWidget(const Car& car) const;
     void applyFilters();
+    void updateViewButtons();
+    CatalogMode mode = CatalogMode::None;
+    bool sortAscending = true;
     void loadCarsList(QListWidget* ui, const QList<Car>& result, bool isAvailable = true) const;
 };
 

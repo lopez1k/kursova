@@ -141,12 +141,12 @@ void Car::setCategory(const Category _category) {
 }
 
 void Car::setManufacturerYear(const int _manufacturerYear) {
-    if (_manufacturerYear < 1900 || _manufacturerYear > 2100) {
-        throw InvalidCarDataException("Рік випуску має бути в межах 1900–2100.");
+    const int currentYear = QDate::currentDate().year();
+    if (_manufacturerYear < 1990 || _manufacturerYear > currentYear) {
+        throw InvalidCarDataException(QString("Рік випуску має бути в межах 1990–%1.").arg(currentYear));
     }
     this->manufacturerYear = _manufacturerYear;
 }
-
 void Car::setSeats(const int _seats) {
     if (_seats <= 0) {
         throw InvalidCarDataException("Кількість місць має бути більшою за 0.");
