@@ -37,8 +37,39 @@ QComboBox {
     background: #FFFFFF; border: 1px solid #C9D0D9; border-radius: 4px;
     padding: 5px 26px 5px 8px; min-height: 22px;
 }
-QComboBox:hover { border-color: #A9B8CC; }
-QComboBox:focus { border-color: #4A6FA5; }
+QSpinBox, QDoubleSpinBox {
+    background: #FFFFFF; border: 1px solid #C9D0D9; border-radius: 4px;
+    padding: 5px 26px 5px 8px; min-height: 22px;
+}
+QComboBox:hover, QSpinBox:hover, QDoubleSpinBox:hover { border-color: #A9B8CC; }
+QComboBox:focus, QSpinBox:focus, QDoubleSpinBox:focus { border-color: #4A6FA5; }
+QSpinBox::up-button, QDoubleSpinBox::up-button,
+QSpinBox::down-button, QDoubleSpinBox::down-button {
+    subcontrol-origin: border; width: 22px;
+    border: none; border-left: 1px solid #E1E5EA; background: transparent;
+}
+QSpinBox::up-button, QDoubleSpinBox::up-button {
+    subcontrol-position: top right; border-top-right-radius: 4px;
+}
+QSpinBox::down-button, QDoubleSpinBox::down-button {
+    subcontrol-position: bottom right; border-bottom-right-radius: 4px;
+}
+QSpinBox::up-button:hover, QDoubleSpinBox::up-button:hover,
+QSpinBox::down-button:hover, QDoubleSpinBox::down-button:hover { background: #EEF1F5; }
+QSpinBox::up-arrow, QDoubleSpinBox::up-arrow {
+    image: none; width: 0px; height: 0px;
+    border-left: 4px solid transparent; border-right: 4px solid transparent;
+    border-bottom: 4px solid #5B6573;
+}
+QSpinBox::down-arrow, QDoubleSpinBox::down-arrow {
+    image: none; width: 0px; height: 0px;
+    border-left: 4px solid transparent; border-right: 4px solid transparent;
+    border-top: 4px solid #5B6573;
+}
+QSpinBox::up-arrow:disabled, QDoubleSpinBox::up-arrow:disabled,
+QSpinBox::up-arrow:off, QDoubleSpinBox::up-arrow:off { border-bottom-color: #C9D0D9; }
+QSpinBox::down-arrow:disabled, QDoubleSpinBox::down-arrow:disabled,
+QSpinBox::down-arrow:off, QDoubleSpinBox::down-arrow:off { border-top-color: #C9D0D9; }
 QComboBox::drop-down {
     subcontrol-origin: padding; subcontrol-position: center right;
     width: 24px; border: none; background: transparent;
@@ -403,7 +434,7 @@ QMenu::item:selected { background: #EEF3FA; color: #1F2933; }
                <widget class="QComboBox" name="categoryFilter">
                 <property name="minimumSize">
                  <size>
-                  <width>130</width>
+                  <width>115</width>
                   <height>34</height>
                  </size>
                 </property>
@@ -439,7 +470,7 @@ QMenu::item:selected { background: #EEF3FA; color: #1F2933; }
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
-                  <width>14</width>
+                  <width>4</width>
                   <height>10</height>
                  </size>
                 </property>
@@ -456,7 +487,7 @@ QMenu::item:selected { background: #EEF3FA; color: #1F2933; }
                <widget class="QComboBox" name="statusFilter">
                 <property name="minimumSize">
                  <size>
-                  <width>130</width>
+                  <width>115</width>
                   <height>34</height>
                  </size>
                 </property>
@@ -480,6 +511,93 @@ QMenu::item:selected { background: #EEF3FA; color: #1F2933; }
                   <string>Недоступно</string>
                  </property>
                 </item>
+               </widget>
+              </item>
+              <item>
+               <spacer name="filterGap2">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Policy::Fixed</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>4</width>
+                  <height>10</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLabel" name="lblMinSeats">
+                <property name="text">
+                 <string>Мін. місць:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="spinMinSeats">
+                <property name="minimumSize">
+                 <size>
+                  <width>80</width>
+                  <height>34</height>
+                 </size>
+                </property>
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>20</number>
+                </property>
+                <property name="value">
+                 <number>1</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="filterGap3">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Policy::Fixed</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>4</width>
+                  <height>10</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLabel" name="lblMaxPrice">
+                <property name="text">
+                 <string>Макс. ціна:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="spinMaxPrice">
+                <property name="minimumSize">
+                 <size>
+                  <width>110</width>
+                  <height>34</height>
+                 </size>
+                </property>
+                <property name="decimals">
+                 <number>0</number>
+                </property>
+                <property name="maximum">
+                 <double>100000.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>100.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>100000.000000000000000</double>
+                </property>
                </widget>
               </item>
               <item>

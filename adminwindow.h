@@ -29,6 +29,8 @@ private slots:
     void on_categoryFilter_currentIndexChanged(int index);
 
     void on_statusFilter_currentIndexChanged(int index);
+    void on_spinMinSeats_valueChanged(int arg1);
+    void on_spinMaxPrice_valueChanged(double arg1);
 
 
     void on_btnAddCar_clicked();
@@ -62,6 +64,7 @@ private:
     QWidget* loginWindow;
     QWidget* createCarCardWidget(const Car& car) const;
     void applyFilters();
+    void updatePriceLimit(const QList<Car>& cars);
     void updateViewButtons();
     CatalogMode mode = CatalogMode::None;
     bool sortAscending = true;

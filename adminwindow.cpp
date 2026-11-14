@@ -11,6 +11,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLocale>
+#include <QSignalBlocker>
 #include <cmath>
 
 AdminWindow::AdminWindow(UserManager* usermanager, CarManager* carmanager, RentalManager* rentalmanager, QWidget* loginWindow, QWidget *parent)
@@ -187,13 +188,20 @@ void AdminWindow::loadUsersTable() const {
 void AdminWindow::applyFilters()
 {
     QList<Car> cars = carmanager->getAllCars();
+    updatePriceLimit(cars);
+
     int categoryIndex = ui->categoryFilter->currentIndex();
     int statusIndex = ui->statusFilter->currentIndex();
+    int minSeats = ui->spinMinSeats->value();
+    double maxPrice = ui->spinMaxPrice->value();
 
     QList<Car> result;
     for (const Car& car : cars) {
         if (car.getStatus() == Status::Archived) {
             continue;   // архівні не показуємо і не враховуємо в мін/макс
+        }
+        if (car.getSeats() < minSeats || car.getRentPrice() > maxPrice) {
+            continue;
         }
         if (categoryIndex != 0) {
             if (car.getCategoryString() != ui->categoryFilter->currentText()) {
@@ -236,6 +244,36 @@ void AdminWindow::on_categoryFilter_currentIndexChanged(int index)
 void AdminWindow::on_statusFilter_currentIndexChanged(int index)
 {
     applyFilters();
+}
+
+void AdminWindow::on_spinMinSeats_valueChanged(int arg1)
+{
+    applyFilters();
+}
+
+void AdminWindow::on_spinMaxPrice_valueChanged(double arg1)
+{
+    applyFilters();
+}
+
+void AdminWindow::updatePriceLimit(const QList<Car>& cars)
+{
+    double maxRentPrice = 0.0;
+    for (const Car& car : cars) {
+        if (car.getStatus() != Status::Archived && car.getRentPrice() > maxRentPrice) {
+            maxRentPrice = car.getRentPrice();
+        }
+    }
+
+    // якщо фільтр стояв на максимумі (тобто "без обмеження"), він іде за новим максимумом,
+    // інакше нове дороге авто після додавання/редагування було б одразу відфільтроване
+    const bool wasAtLimit = ui->spinMaxPrice->value() >= ui->spinMaxPrice->maximum();
+
+    QSignalBlocker blocker(ui->spinMaxPrice);
+    ui->spinMaxPrice->setMaximum(maxRentPrice);
+    if (wasAtLimit) {
+        ui->spinMaxPrice->setValue(maxRentPrice);
+    }
 }
 
 
