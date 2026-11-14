@@ -20,7 +20,8 @@ public:
 
 private slots:
     void on_pushButton_clicked();
-
+    void on_btnRegister_clicked();
+    
 private:
     Ui::MainWindow *ui;
     UserManager* usermanager;
