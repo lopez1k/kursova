@@ -29,6 +29,8 @@ public:
     QString getName() const;
     QString getEmail() const;
     QString getPassword() const;
+    void setId(const QString& _id);
+    void setRole(const Role _role);
     void setName(const QString& _name);
     void setEmail(const QString& _email);
     void setPassword(const QString& _password);

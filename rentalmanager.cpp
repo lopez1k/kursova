@@ -60,15 +60,19 @@ void RentalManager::loadFromJson() {
 
     for(const QJsonValue& value: jsonArray) {
         if (value.isObject()) {
-            Rental rental;
-            value.toObject() >> rental;
-            rentals.append(rental);
-            QString numStr = rental.getId();
-            numStr.remove(QRegularExpression("[^0-9]"));
+            try {
+                Rental rental;
+                value.toObject() >> rental;
+                rentals.append(rental);
+                QString numStr = rental.getId();
+                numStr.remove(QRegularExpression("[^0-9]"));
 
-            int currentNum = numStr.toInt();
-            if (currentNum > maxNum) {
-                maxNum = currentNum;
+                int currentNum = numStr.toInt();
+                if (currentNum > maxNum) {
+                    maxNum = currentNum;
+                }
+            } catch (const AppException& ex) {
+                qWarning() << "При зчитуванні з файлу сталась помилка: " << ex.what();
             }
         }
     }

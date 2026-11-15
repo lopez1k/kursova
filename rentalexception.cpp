@@ -11,3 +11,5 @@ InvalidRentalPeriodException::InvalidRentalPeriodException() : RentalException("
 RentalNotFoundException::RentalNotFoundException(const QString& rentalId) : RentalException("Оренду з ID " + rentalId + " не знайдено.") {}
 
 RentalNotActiveException::RentalNotActiveException(const QString& rentalId) : RentalException("Оренда " + rentalId + " не є активною, дію неможливо виконати.") {}
+
+InvalidRentalDataException::InvalidRentalDataException(const QString& msg) : RentalException(msg) {}

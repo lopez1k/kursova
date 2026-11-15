@@ -50,6 +50,24 @@ QString User::getPassword() const {
     return this->password ;
 }
 
+void User::setId(const QString& _id) {
+    static const QRegularExpression idRegex("^U-\\d+$");
+    if (_id.trimmed().isEmpty()) {
+        throw UserException("ID користувача не може бути порожнім.");
+    }
+    if (!idRegex.match(_id).hasMatch()) {
+        throw UserException("Некоректний ID користувача: " + _id + " (очікується формат U-<число>).");
+    }
+    this->id = _id;
+}
+
+void User::setRole(const Role _role) {
+    if (_role != Role::Customer && _role != Role::Administrator) {
+        throw UserException("Невідома роль користувача.");
+    }
+    this->role = _role;
+}
+
 void User::setName(const QString& _name) {
     if (!_name.trimmed().isEmpty()) {
         this->name = _name;
@@ -90,11 +108,11 @@ QTextStream& operator << (QTextStream& out, const User& user) {
 }
 
 const QJsonObject& operator >> (const QJsonObject& json, User& user) {
-    user.id = json["id"].toString();
-    user.name = json["name"].toString();
-    user.email = json["email"].toString();
+    user.setId(json["id"].toString());
+    user.setName(json["name"].toString());
+    user.setEmail(json["email"].toString());
     user.password = json["password"].toString();
-    user.role = User::stringToRole(json["role"].toString());
+    user.setRole(User::stringToRole(json["role"].toString()));
 
     return json;
 }

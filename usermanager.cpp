@@ -18,8 +18,6 @@ QString UserManager::generateId() {
 }
 
 
-
-
 void UserManager::saveToJson() const {
     QJsonArray jsonArray;
 
@@ -62,16 +60,20 @@ void UserManager::loadFromJson() {
 
     for(const QJsonValue& value: jsonArray) {
         if (value.isObject()) {
-            User user;
-            value.toObject() >> user;
-            users.append(user);
+            try {
+                User user;
+                value.toObject() >> user;
+                users.append(user);
 
-            QString numStr = user.getId();
-            numStr.remove(QRegularExpression("[^0-9]"));
+                QString numStr = user.getId();
+                numStr.remove(QRegularExpression("[^0-9]"));
 
-            int currentNum = numStr.toInt();
-            if (currentNum > maxNum) {
-                maxNum = currentNum;
+                int currentNum = numStr.toInt();
+                if (currentNum > maxNum) {
+                    maxNum = currentNum;
+                }
+            } catch (const AppException& ex) {
+                qWarning() << "При зчитуванні з файлу сталась помилка: " << ex.what();
             }
         }
     }

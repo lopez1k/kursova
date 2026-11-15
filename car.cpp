@@ -200,15 +200,14 @@ QTextStream& operator << (QTextStream& out, const Car& car) {
 }
 
 const QJsonObject& operator >> (const QJsonObject& json, Car& car) {
-    car.id = json["id"].toString();
-    car.brand = json["brand"].toString();
-    car.model = json["model"].toString();
-    car.category = Car::stringToCategory(json["category"].toString());
-    car.manufacturerYear = json["manufacturerYear"].toInt();
-    car.seats = json["seats"].toInt();
-    car.rentPrice = json["rentPrice"].toDouble();
-    car.mileage = json["mileage"].toDouble();
-    car.status = Car::stringToStatus(json["status"].toString());
-
+    car.setId(json["id"].toString());
+    car.setBrand(json["brand"].toString());
+    car.setModel(json["model"].toString());
+    car.setCategory(Car::stringToCategory(json["category"].toString()));
+    car.setManufacturerYear(json["manufacturerYear"].toInt());
+    car.setSeats(json["seats"].toInt());
+    car.setRentPrice(json["rentPrice"].toDouble());
+    car.setMileage(json["mileage"].toDouble());
+    car.setStatus(Car::stringToStatus(json["status"].toString()));
     return json;
 }

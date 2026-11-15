@@ -33,4 +33,9 @@ public:
     explicit RentalNotActiveException(const QString& rentalId);
 };
 
+class InvalidRentalDataException : public RentalException {
+public:
+    explicit InvalidRentalDataException(const QString& msg);
+};
+
 #endif // RENTALEXCEPTION_H

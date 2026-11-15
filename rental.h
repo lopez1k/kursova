@@ -42,6 +42,16 @@ public:
     RentalStatus getStatus() const;
     QString getStatusString() const;
 
+    void setId(const QString& _id);
+    void setUserId(const QString& _userId);
+    void setCarId(const QString& _carId);
+    void setStartDate(const QDateTime& _startDate);
+    void setEndDate(const QDateTime& _endDate);
+    void setReturnedDate(const QDateTime& _returnedDate);
+    void setPricePerDay(const double _pricePerDay);
+    void setTotalPrice(const double _totalPrice);
+    void setStatus(const RentalStatus _status);
+
     void complete();
     void cancel();
     static RentalStatus stringToStatus(const QString& str);
