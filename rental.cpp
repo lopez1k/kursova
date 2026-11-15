@@ -96,7 +96,7 @@ void Rental::setUserId(const QString& _userId) {
 }
 
 void Rental::setCarId(const QString& _carId) {
-    static const QRegularExpression pattern("^C-?\\d+$");
+    static const QRegularExpression pattern("^C-\\d+$");
     if (_carId.trimmed().isEmpty()) {
         throw InvalidRentalDataException("ID авто не може бути порожнім.");
     }

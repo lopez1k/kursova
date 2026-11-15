@@ -1,4 +1,5 @@
 #include "car.h"
+#include <QRegularExpression>
 
 
 Car::Car(const QString& _id, const QString& _brand, const QString& _model, const Category& _category, const int& _manufacturerYear, const int& _seats, const double& _rentPrice, const double& _mileage, const Status& _status) : id(_id), category(_category), status(_status) {
@@ -126,6 +127,13 @@ QString Car::getStatusString() const {
 }
 
 void Car::setId(const QString& _id) {
+    static const QRegularExpression idRegex("^C-\\d+$");
+    if (_id.trimmed().isEmpty()) {
+        throw InvalidCarDataException("ID авто не може бути порожнім.");
+    }
+    if (!idRegex.match(_id).hasMatch()) {
+        throw InvalidCarDataException("Некоректний ID авто: " + _id + " (очікується формат C-<число>).");
+    }
     this->id = _id;
 }
 
