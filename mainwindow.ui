@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Оренда авто</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/img/logo.png</normaloff>:/img/logo.png</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true">
 QWidget { font-family: &quot;Segoe UI&quot;; font-size: 10pt; color: #1F2933; }

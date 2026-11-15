@@ -25,8 +25,9 @@
   <property name="windowTitle">
    <string>Реєстрація</string>
   </property>
-  <property name="modal">
-   <bool>true</bool>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/img/logo.png</normaloff>:/img/logo.png</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">
@@ -54,6 +55,9 @@ QPushButton#btnRegister { background: #4A6FA5; border-color: #4A6FA5; color: #FF
 QPushButton#btnRegister:hover   { background: #3F5F8F; border-color: #3F5F8F; }
 QPushButton#btnRegister:pressed { background: #34507A; }
 </string>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
   </property>
   <layout class="QVBoxLayout" name="mainLayout">
    <property name="spacing">
@@ -226,6 +230,8 @@ QPushButton#btnRegister:pressed { background: #34507A; }
   <tabstop>btnRegister</tabstop>
   <tabstop>btnCancel</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

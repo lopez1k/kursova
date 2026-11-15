@@ -25,6 +25,10 @@
   <property name="windowTitle">
    <string>Додати новий автомобіль</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/img/logo.png</normaloff>:/img/logo.png</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true">
 QWidget { font-family: &quot;Segoe UI&quot;; font-size: 10pt; color: #1F2933; }
@@ -333,6 +337,8 @@ QPushButton#btnAdd:pressed { background: #34507A; }
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
