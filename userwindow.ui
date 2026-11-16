@@ -606,6 +606,9 @@ QFrame#statsCard QLabel[kind=&quot;caption&quot;] { color: #6B7480; background: 
          </item>
          <item>
           <widget class="QListWidget" name="carsListWidget">
+           <property name="contextMenuPolicy">
+            <enum>Qt::ContextMenuPolicy::DefaultContextMenu</enum>
+           </property>
            <property name="frameShape">
             <enum>QFrame::Shape::NoFrame</enum>
            </property>

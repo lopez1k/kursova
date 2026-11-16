@@ -115,8 +115,6 @@ QPushButton#btnDeleteUser {
 QPushButton#btnDeleteUser:hover    { background: #FDF1F0; border-color: #D9A39D; }
 QPushButton#btnDeleteUser:pressed  { background: #FBE7E5; }
 QPushButton#btnDeleteUser:disabled { background: #F4F6F8; border-color: #E6E9ED; color: #A0A8B4; }
-QPushButton#btnDeleteCar:enabled { color: #B42318; border-color: #E8C4C0; background: #FFFFFF; }
-QPushButton#btnDeleteCar:enabled:hover { background: #FDF1F0; border-color: #D9A39D; }
 
 /* ---- Картки авто (createCarCardWidget) ---- */
 QListWidget#carsListWidget { background: transparent; border: none; outline: 0; }
@@ -176,6 +174,7 @@ QMenuBar::item:selected { background: #E3E8EF; }
 QMenu { background: #FFFFFF; border: 1px solid #DDE2E8; padding: 4px; }
 QMenu::item { padding: 6px 18px; border-radius: 4px; }
 QMenu::item:selected { background: #EEF3FA; color: #1F2933; }
+QMenu::item:disabled { color: #A0A8B4; background: transparent; }
 </string>
   </property>
   <layout class="QVBoxLayout" name="rootLayout">
@@ -701,6 +700,9 @@ QMenu::item:selected { background: #EEF3FA; color: #1F2933; }
            </item>
            <item>
             <widget class="QListWidget" name="carsListWidget">
+             <property name="contextMenuPolicy">
+              <enum>Qt::ContextMenuPolicy::CustomContextMenu</enum>
+             </property>
              <property name="frameShape">
               <enum>QFrame::Shape::NoFrame</enum>
              </property>
@@ -736,38 +738,6 @@ QMenu::item:selected { background: #EEF3FA; color: #1F2933; }
                </property>
                <property name="text">
                 <string>Додати авто</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="btnEditCar">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="cursor">
-                <cursorShape>PointingHandCursor</cursorShape>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">color: rgb(0, 0, 0);</string>
-               </property>
-               <property name="text">
-                <string>Редагувати</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="btnDeleteCar">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="cursor">
-                <cursorShape>PointingHandCursor</cursorShape>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">color: rgb(0, 0, 0);</string>
-               </property>
-               <property name="text">
-                <string>Видалити</string>
                </property>
               </widget>
              </item>

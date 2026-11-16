@@ -35,11 +35,7 @@ private slots:
 
     void on_btnAddCar_clicked();
 
-    void on_carsListWidget_itemClicked(QListWidgetItem *item);
-
-    void on_btnEditCar_clicked();
-
-    void on_btnDeleteCar_clicked();
+    void on_carsListWidget_customContextMenuRequested(const QPoint& pos);
 
     void on_btnAddUser_clicked();
 
@@ -66,6 +62,9 @@ private:
     void applyFilters();
     void updatePriceLimit(const QList<Car>& cars);
     void updateViewButtons();
+    bool isCarEditable(const QString& carId) const;
+    void editCar(const QString& carId);
+    void deleteCar(const QString& carId);
     CatalogMode mode = CatalogMode::None;
     bool sortAscending = true;
     void loadCarsList(QListWidget* ui, const QList<Car>& result, bool isAvailable = true) const;

@@ -51,7 +51,7 @@ QString User::getPassword() const {
 }
 
 void User::setId(const QString& _id) {
-    static const QRegularExpression idRegex("^U-\\d+$");
+    static const QRegularExpression emailRegex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
     if (_id.trimmed().isEmpty()) {
         throw UserException("ID користувача не може бути порожнім.");
     }

@@ -12,6 +12,7 @@
 #include <QHBoxLayout>
 #include <QLocale>
 #include <QSignalBlocker>
+#include <QMenu>
 #include <cmath>
 
 AdminWindow::AdminWindow(UserManager* usermanager, CarManager* carmanager, RentalManager* rentalmanager, QWidget* loginWindow, QWidget *parent)
@@ -99,9 +100,6 @@ QWidget* AdminWindow::createCarCardWidget(const Car& car) const {
 
 
 void AdminWindow::loadCarsList(QListWidget* list, const QList<Car>& result, bool isAvailable) const {
-    ui->btnEditCar->setEnabled(false);
-    ui->btnDeleteCar->setEnabled(false);
-
     list->clear();
     list->setViewMode(QListView::IconMode);
     list->setResizeMode(QListView::Adjust);
@@ -130,6 +128,12 @@ void AdminWindow::loadCarsList(QListWidget* list, const QList<Car>& result, bool
         QWidget* cardWidget = createCarCardWidget(car);
         cardWidget->setFixedSize(cardSize);
         containerLayout->addWidget(cardWidget);
+
+        if (isCarEditable(car.getId())) {
+            cardWidget->setToolTip("ПКМ - редагувати або видалити");
+        } else {
+            cardWidget->setToolTip("Авто зараз в оренді - редагування й видалення недоступні");
+        }
 
         list->setItemWidget(item, container);
     }
@@ -296,56 +300,56 @@ void AdminWindow::on_btnAddUser_clicked()
 }
 
 
-void AdminWindow::on_carsListWidget_itemClicked(QListWidgetItem *item)
+bool AdminWindow::isCarEditable(const QString& carId) const
 {
-    if (!item) {
-        ui->btnEditCar->setEnabled(false);
-        ui->btnDeleteCar->setEnabled(false);
-        return;
-    }
-
-    QString carId = item->data(Qt::UserRole).toString();
     Car* car = carmanager->getCarById(carId);
-
-    
-    const bool editable = car
-                          && car->getStatus() != Status::Taken
-                          && !rentalmanager->isCarRented(carId);
-
-    ui->btnEditCar->setEnabled(editable);
-    ui->btnDeleteCar->setEnabled(editable);
+    return car
+           && car->getStatus() != Status::Taken
+           && !rentalmanager->isCarRented(carId);
 }
 
 
-void AdminWindow::on_btnEditCar_clicked()
+void AdminWindow::on_carsListWidget_customContextMenuRequested(const QPoint& pos)
 {
-    QListWidgetItem* item = ui->carsListWidget->currentItem();
+    QListWidgetItem* item = ui->carsListWidget->itemAt(pos);
     if (!item) {
-        return;
+        return;     // клік по порожньому місцю
     }
-    QString carId = item->data(Qt::UserRole).toString();
-    Car* car = carmanager->getCarById(carId);
-    if (!car || car->getStatus() == Status::Taken || rentalmanager->isCarRented(carId)) {
+    ui->carsListWidget->setCurrentItem(item);
+
+    const QString carId = item->data(Qt::UserRole).toString();
+    const bool editable = isCarEditable(carId);
+
+    QMenu menu(this);
+    QAction* actEdit = menu.addAction("Редагувати");
+    QAction* actDelete = menu.addAction("Видалити");
+    actEdit->setEnabled(editable);
+    actDelete->setEnabled(editable);
+
+    QAction* chosen = menu.exec(ui->carsListWidget->viewport()->mapToGlobal(pos));
+    if (chosen == actEdit) {
+        editCar(carId);
+    } else if (chosen == actDelete) {
+        deleteCar(carId);
+    }
+}
+
+
+void AdminWindow::editCar(const QString& carId)
+{
+    if (!isCarEditable(carId)) {
         QMessageBox::information(this, "Недоступно", "Орендоване авто не можна редагувати.");
         return;
     }
     AddCarWindow* addcarui = new AddCarWindow(this->usermanager, this->carmanager, this->rentalmanager, this, carId);
     addcarui->setAttribute(Qt::WA_DeleteOnClose);
     addcarui->show();
-    ui->btnEditCar->setEnabled(false);
-    ui->btnDeleteCar->setEnabled(false);
     connect(addcarui, &QObject::destroyed, this, &AdminWindow::applyFilters);
-
 }
 
 
-void AdminWindow::on_btnDeleteCar_clicked()
+void AdminWindow::deleteCar(const QString& carId)
 {
-    QListWidgetItem* item = ui->carsListWidget->currentItem();
-    if (!item) {
-        return;
-    }
-    QString carId = item->data(Qt::UserRole).toString();
     Car* car = carmanager->getCarById(carId);
     if (!car) {
         return;
@@ -364,8 +368,6 @@ void AdminWindow::on_btnDeleteCar_clicked()
         carmanager->saveToJson();
         applyFilters();
     }
-    ui->btnEditCar->setEnabled(false);
-    ui->btnDeleteCar->setEnabled(false);
 }
 
 
