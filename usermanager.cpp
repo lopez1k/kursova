@@ -91,7 +91,7 @@ void UserManager::addUser(const QString& _name, const QString& _email, const QSt
         throw InvalidNameException();
     }
 
-    static const QRegularExpression emailRegex("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
+    static const QRegularExpression emailRegex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
     if (!emailRegex.match(_email.trimmed()).hasMatch()) {
         throw InvalidEmailException();
     }
